@@ -1,0 +1,1888 @@
+---
+title: |
+ |
+ | \textbf{Introdução à Estatística}
+ | \vspace{0.2cm}Fundamentos de Análise Exploratória de Dados
+ | Conceitos e Aplicações
+ 
+subtitle:  |
+ |
+ | Encontro 2
+ | Resumos numéricos e análises bivariadas.\vspace{-1.5cm}
+ 
+author: Prof. Me. Lineu Alberto Cavazani de Freitas \vspace{-1.5cm}
+date: ""
+#institute: |
+# |
+# | Departamento de Estatística
+# | Laboratório de Estatística e Geoinformação
+graphics: yes
+classoption: [serif, professionalfont, usenames, dvipsnames, aspectratio = 169]
+# bibliography: references.bib
+# csl: ../config/ABNT_UFPR_2011-Mendeley.csl
+output:
+  beamer_presentation:
+    fig_caption: yes
+    fig_crop: no
+    highlight: haddock
+    includes:
+      # NOTE: background, color theme and logos are defined in `preamble-rmd-settings.tex`.
+      in_header: [config/preamble-settings-rmd.tex, config/preamble-global.tex, config/preamble-chunk-rmd.tex, config/preamble-commands.tex]
+    keep_tex: yes
+# http://rmarkdown.rstudio.com/beamer_presentation_format.html
+---
+
+```{r, include = FALSE}
+source("./config/setup.R")
+library(tidyverse)
+```
+
+## Análise exploratória
+
+ - Parte primordial de qualquer análise estatística é chamada \textbf{análise descritiva} ou \textbf{exploratória}.
+ 
+ - Consiste basicamente de \textbf{tabelas}, \textbf{resumos numéricos} e \textbf{análises gráficas} das variáveis disponíveis em um conjunto de dados.
+ 
+ - Trata-se de uma etapa de extrema importância e deve preceder qualquer análise mais sofisticada.
+
+ - As técnicas de análise exploratória visam \textbf{resumir} e \textbf{apresentar} as informações de um conjunto de dados brutos.
+
+## Análise exploratória
+
+\beginAHalfColumn
+
+ - A análise exploratória de dados é uma área relativamente nova.
+
+\vspace{0.3cm}
+
+ - Nasceu do clássico livro \textbf{Exploratory Data Analysis} de \textbf{John Tukey} em 1977.
+
+\vspace{0.3cm}
+
+ - Algo curioso é que Tukey tinha uma relação próxima com a Ciência da Computação e definiu os termos \textbf{bit} e \textbf{software}.
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo = FALSE, out.width='62%', fig.align='center', fig.cap="Capa do livro Exploratory Data Analysis de John Tukey."}
+
+knitr::include_graphics("./img/eda-tukey.jpg")
+```
+
+\endColumns
+
+## Análise exploratória
+
+ - Como quase tudo em análise de dados, o \textbf{avanço computacional} permitiu com que a análise exploratória evoluísse substancialmente.
+
+ - Por exemplo: historicamente o processo de criação de um gráfico era reservado a pessoas qualificadas pois a produção de uma visualização era difícil. 
+
+ - Hoje qualquer pessoa pode inserir dados em um aplicativo e gerar um gráfico.
+
+ - Este tipo de facilidade é importante para disseminação e democratização dos métodos, porém abre margem para certas práticas inadequadas.
+
+## Análise exploratória
+
+\beginAHalfColumn
+
+ - Tentar compreender um conjunto de dados sem algum método que permita resumir as informações é inviável.
+
+\vspace{0.3cm}
+
+ - A análise exploratória é a primeira forma de tentarmos entender o que acontece nos nossos dados.
+
+\vspace{0.3cm}
+
+ - Uma das tarefas é a etapa de consistência dos dados, isto é, verificar se os dados coletados são condizentes com a realidade.
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Extraído de \\href{https://cdn.pixabay.com/photo/2018/01/26/18/21/matrix-3109378_1280.jpg}{pixabay.com.}"}
+
+knitr::include_graphics("./img/dados.jpg")
+```
+
+\endColumns
+
+## Análise exploratória
+
+\beginAHalfColumn
+
+ - O conjunto de técnicas aplicáveis está diretamente associado ao \textbf{tipo das variáveis de interesse} (quantitativas x qualitativas) e suas ramificações.
+
+\vspace{0.3cm}
+
+ - Podemos conduzir análises focadas nas variáveis uma a uma (\textbf{análises univariadas}).
+
+\vspace{0.3cm}
+
+ - Também podemos conduzir análises focadas em avaliar a relação entre as variáveis (\textbf{análises multivariadas}).
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo = FALSE, out.width='80%', fig.align='center', fig.cap="Extraído de \\href{https://cdn.pixabay.com/photo/2020/08/03/10/00/graph-5459708_1280.png}{pixabay.com.}"}
+
+knitr::include_graphics("./img/exploratoria.png")
+```
+
+\endColumns
+
+## Análise exploratória
+
+Podemos fazer uso diversas técnicas, tais como
+
+\beginAHalfColumn
+
+ - Tabelas de frequência absolutas.
+ - Tabelas de frequência relativas.
+ - Tabelas de frequência acumuladas.
+ - Tabelas para múltiplas variáveis.
+ - Gráficos.
+
+\endColumns
+\beginAHalfColumn
+
+ - Medidas de posição central.
+ - Medidas de posição relativa.
+ - Medidas de forma.
+ - Medidas de dispersão.
+ - Medidas de associação.
+
+\endColumns
+
+# Resumos numéricos
+
+## Resumos numéricos
+
+ - Uma forma de resumir a informação contida em um conjunto de dados é por meio dos \textbf{resumos numéricos}.
+
+ - Resumos numéricos são basicamente \textbf{números que resumem números}.
+
+ - Os dois principais grupos são as medidas de \textbf{posição} (central e relativa) e \textbf{dispersão}.
+
+ - Existem outros conjuntos de medidas, como as medidas de \textbf{forma} e também as de \textbf{relação/associação}.
+
+# Medidas de posição central
+
+## Medidas de posição central
+
+ - Um passo fundamental na exploração dos dados é definir um \textbf{valor típico} (uma estimativa onde a maior parte dos dados está localizada).
+
+ - Considerando um conjunto de valores qualquer, como definir um valor central? A resposta é: depende do critério.
+
+\vspace{0.7cm}
+
+\beginAHalfColumn
+
+ - As medidas de posição central buscam expressar o \textbf{centro} de uma variável por meio de ideias como:
+   - Centro de massa.
+   - Valor que divide a amostra em partes iguais.
+   - Valores de maior frequência ou densidade.
+
+\endColumns
+\beginAHalfColumn
+
+ - Algumas possiblidades são 
+   - Média.
+   - Mediana.
+   - Moda.
+   - Média geométrica.
+   - Média harmônica.
+   - Média aparada.
+
+\endColumns
+
+## Média aritmética
+
+ - Soma de todos os valores dividida pela quantidade de elementos.
+ - Interpretação física de centro de gravidade.
+ - Medida influenciada por valores extremos.
+
+\textbf{Expressão}
+
+Sejam $y_1, y_2,...,y_n$ os $n$ valores de uma variável $Y$, a média é dada por:
+
+$$
+      \overline{y} = \dfrac{\sum_{i = 1}^{n} y_i}{n} = \frac{y_1 + y_2 + \cdots + y_n}{n}.
+$$
+
+
+## Média aritmética
+
+\textbf{Exemplo}
+
+ - Considere que uma turma possui 10 alunos.
+ 
+ - Estes alunos realizaram uma avaliação.
+ 
+ - Considere que as notas obtidas foram:
+
+$$60;\ 65;\ 77;\ 95;\ 56;\ 94;\ 97;\ 81;\ 80;\ 48$$
+
+ - Qual foi a nota média da turma?
+
+$$Y: \text{Notas obtidas.}$$
+
+$$
+\overline{y}  = \frac{60+65+77+95+56+94+97+81+80+48}{10} = \frac{753}{10} = 75,3
+$$
+
+## Média aritmética ponderada
+
+ - Indicada para \textbf{dados agrupados} em tabelas de frequência ou situações em que existe motivo para unidades receberem um \textbf{peso} maior.
+ - Obtêm-se os produtos entre frequências absolutas (ou pesos) e os valores que a variável assume.
+ - Somam-se os produtos e divide-se pela soma das frequências (quantidade de elementos).
+ - No caso de faixas de valores, usa-se o centro da faixa.
+
+$$
+\overline{y} = \dfrac{\sum_{i = 1}^{k} f_i \cdot y_i}{\sum_{i = 1}^{k} f_i}.
+$$
+
+ - $f_i$ representa a frequência da classe $i$.
+ - $k$ representa o número de classes ($k \leq n$). 
+
+## Média aritmética ponderada
+
+\textbf{Exemplo 1}
+
+ - Considere que uma prova com 10 questões de múltipla escolha foi aplicada em uma turma com 100 alunos. 
+ 
+ - Só temos acesso à uma tabela de frequências do número de questões corretas.
+ 
+  - Qual é o número médio de questões corretas? 
+  
+```{r, echo=FALSE}
+
+notas <- data.frame(Acertos = 0:10,
+           Frequência = c(1, 0, 0, 5, 2, 30,
+                          21, 29, 8, 3, 1))
+
+knitr::kable(t(notas), 
+             caption = "Tabela de frequências do número de questões acertadas.", 
+             align ="ccc" )
+```
+
+
+
+## Média aritmética ponderada
+
+\textbf{Exemplo 1}
+
+$$Y: \text{Número de acertos.}$$
+
+$$\overline{y} = \dfrac{(0\times1)+(1\times0)+(2\times0)+(3\times5)+...+(7\times29)+(8\times8)+(9\times3)+(10\times1)}{100}$$
+
+$$\overline{y} = \dfrac{0+0+0+15+8+150+126+203+64+27+10}{100}= 6,03$$ 
+
+## Média aritmética ponderada
+
+\textbf{Exemplo 2}
+
+ - Considere a seguinte tabela de frequências da idade dos funcionários de uma empresa.
+
+- Qual é a idade média dos funcionários?
+
+```{r, echo=FALSE}
+set.seed(1)
+
+x <- rgamma(1000, 40)
+
+breaks <- hist(x, plot = FALSE)$breaks
+
+classes <- cut(x, 
+               breaks = breaks, 
+               include.lowest = TRUE, 
+               right = TRUE)
+
+tabela <- as.data.frame(table(classes)) 
+
+names(tabela) <- c("Faixas", "Frequência")
+
+knitr::kable(t(tabela), 
+             caption = "Tabela de frequências das notas obtidas pelos alunos.", 
+             align ="ccc" )
+
+```
+
+
+## Média aritmética ponderada
+
+\textbf{Exemplo 2}
+
+$$Y: \text{Idade do funcionário.}$$
+
+$$\overline{y} = \dfrac{(22,5\times3)+(27,5\times45)+(32,5\times191)...+(57,5\times7)+(62,5\times0)+(67,5\times2)}{1000}$$
+
+$$\overline{y} = \dfrac{67,5+1237,5+6207,5+11625+...+2835+402,5+0+135
+}{1000}= 39,7$$ 
+
+## Outros tipos de média
+
+ - Média aritmética e ponderada são os tipos de média mais comuns.
+ - Contudo existem outras possibilidades como
+   - Média geométrica.
+   - Média harmônica.
+   - Média aparada.
+
+## Mediana
+
+ - Valor que ocupa a \textbf{posição intermediária} dos valores ordenados.
+ - Divide o vetor de valores em 2 partes de mesmo tamanho.
+ - Metade dos valores é menor que a mediana e a outra metade maior que a mediana.
+
+ - Existem diferentes métodos para se obter a mediana, um deles é o chamado \textbf{método de Tukey}.
+ - No método de Tukey basta \textbf{ordenar o conjunto de valores} e verificar qual é o valor central.
+ - Se o número de observações for ímpar, a mediana é o valor central.
+ - Se o número de observações for par, a mediana é a média dos dois valores centrais.
+
+## Mediana (pelo método de Tukey)
+
+ - Passo 1: ordenar.
+$$
+y_{(1)} \leq y_{(2)} \leq \, \cdots \, \leq y_{(n-1)} \leq y_{(n)}.
+$$
+
+ - Passo 2: obter a mediana de acordo com o número de elementos.
+$$
+md = \begin{cases}
+           y_{((n + 1)/2)}, & \text{ se } n \text{ for \'impar}.\\
+           (y_{(n/2)} + y_{(n/2 + 1)})/2, & \text{ se } n \text{ for par}.\\
+           \end{cases}
+$$
+
+
+## Mediana (pelo método de Tukey)
+
+\textbf{Exemplo}
+
+ - Uma concessionária está fazendo o levantamento anual de vendas.
+ 
+ - Considere que as vendas por mês do ano anterior estão dadas na tabela.
+ 
+ - Qual é o número mediano de vendas?
+ 
+```{r, echo=FALSE}
+set.seed(1)
+vendas <- data.frame(Mês = c("Jan",
+                   "Fev",
+                   "Mar",
+                   "Abr",
+                   "Mai",
+                   "Jun",
+                   "Jul",
+                   "Ago",
+                   "Set",
+                   "Out",
+                   "Nov",
+                   "Dez"),
+           Vendas = rpois(12, 100))
+
+knitr::kable(t(vendas), 
+             caption = "Tabela de frequências das vendas mensais.", 
+             align ="ccc" )
+
+```
+ 
+## Mediana (pelo método de Tukey)
+
+\textbf{Exemplo} 
+
+ - Passo 1: ordenar os valores.
+
+```{r, echo=FALSE}
+knitr::kable(t(arrange(vendas, Vendas) %>% 
+  mutate(`(i)` = 1:12) %>% 
+  select(`(i)`,Vendas)), 
+             caption = "Vendas ordenadas.", 
+             align ="ccc" )
+```
+
+- Passo 2: obter a mediana de acordo com o número de elementos.
+  - O número de elementos é par, portanto a mediana será a média dos dois valores centrais.
+  - Mediana: $(97+104)/2 = 100,5$
+
+
+
+## Moda
+
+
+\beginAHalfColumn
+
+ - Valor ou classe que apresenta \textbf{maior frequência ou densidade}.
+ - Valor mais \textbf{típico}, aquele que mais se repete.
+ - Quando todos os valores são distintos, não existe moda.
+ - Quando a maior frequência está associada a mais de um valor, existe mais de uma moda.
+
+\endColumns
+\beginAHalfColumn
+
+\textbf{Exemplo}
+
+ - Considere que os valores a seguir dizem respeito ao número de filhos por pessoa em um grupo.
+ 
+$$2;\ 3;\ 6;\ 1;\ 3;$$ 
+$$4;\ 1;\ 2;\ 0;\ 1;$$ 
+$$1;\ 0;\ 1;\ 4;\ 1$$
+
+ - Qual é a moda?
+    - O valor mais frequente é $1$, que aparece 6 vezes.
+
+\endColumns
+
+
+## Média, mediana e moda
+
+ - Na prática, estas medidas possuem \textbf{vantagens} e \textbf{desvantagens}. 
+ 
+ - Caso haja \textbf{valores discrepantes} a \textbf{média} é uma medida \textbf{altamente influenciada}, o que não acontece com a moda e a mediana. 
+ 
+ - Já a \textbf{mediana} é difícil de ser obtida quando existem muitos dados, dado que o \textbf{processo de ordenação é custoso}. 
+ 
+ - A dificuldade com a \textbf{moda} surge quando trabalha-se com \textbf{distribuições multimodais}, isto é diversos valores tem a mesma frequência de ocorrência.
+
+## Média, mediana e moda
+
+
+ - A \textbf{média} tende a ser uma boa alternativa quando a distribuição é \textbf{unimodal, simétrica e sem valores extremos}.
+
+ - A \textbf{mediana} tende a ser uma boa alternativa para \textbf{distribuições assimétricas} ou com presença de \textbf{valores extremos}.
+
+ - A \textbf{moda} tende a ser uma boa alternativa quando \textbf{valores se repetem}, estão \textbf{agrupados em classes} ou trata-se de uma \textbf{variável qualitativa}.
+ 
+ - Média, moda e mediana aproximam-se em distribuições \textbf{unimodais simétricas}.
+
+## Média, mediana, moda e assimetria
+
+ - Vimos anteriormente como avaliar assimetria por meio de recursos gráficos.
+ 
+ - Podemos utilizar as medidas de posição central
+    - \textbf{Assimetria à direita}: $moda < mediana < média$.
+    - \textbf{Assimetria à esquerda}: $média < mediana < moda$.
+    - \textbf{Simetria}: $média = mediana = moda$.
+ 
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Relação medidas descritivas e assimetria"}
+
+knitr::include_graphics("./img/assimetria.jpg")
+```
+
+# Medidas de posição relativa
+
+## Medidas de posição relativa
+
+\beginAHalfColumn
+
+ - As medidas de posição relativa ou separatrizes buscam representar \textbf{pontos do domínio} em que a variável apresenta porções com frequências conhecidas.
+
+\vspace{0.3cm}
+
+ - Visam encontrar valores que representam alguma parcela dos dados.
+
+\endColumns
+\beginAHalfColumn
+  
+ - Algumas possiblidades são 
+   - Quartis.
+   - Decis.
+   - Percentis.
+   - Máximo.
+   - Mínimo.
+
+\endColumns
+
+## Quartis
+
+ - Dividem a amostra em \textbf{$4$ partes de mesmo tamanho}.
+ - A ideia para obtenção é similar à da \textbf{mediana}.
+ - Na verdade, a mediana é um dos quartis: o segundo.
+ - O primeiro e terceiro quartil são as \textbf{medianas} das duas partes divididas pela mediana (método de Tukey).
+ 
+## Quartis
+
+ - O \textbf{primeiro quartil} ($Q_1$) é o valor que marca $1/4$ das observações, isto é, $25\%$.
+
+\vspace{0.3cm}
+
+ - O \textbf{segundo quartil} ($Q_2$) é o valor que marca $2/4=1/2$ das observações, isto é, $50\%$ (a mediana).
+
+\vspace{0.3cm}
+
+ - O \textbf{terceiro quartil} ($Q_3$) é o valor que marca $3/4$ das observações, isto é, $75\%$.
+
+\vspace{0.3cm}
+
+ - A diferença entre primeiro e terceiro quartil é chamada de \textbf{amplitude interquartílica} ($AIQ = Q_3-Q_1$).
+
+\vspace{0.3cm}
+
+ - Estas quantidades são usadas para criação de um poderoso gráfico: o \textbf{box-plot}.
+
+## Quartis
+
+\textbf{Exemplo}
+
+ - Considere os seguintes valores:
+ 
+$$6; 12; 14;  7; 11;  7;  6; 12;  4; 11;  3;  4;  3;  4;  2$$
+
+ - Obtenha os quartis e a amplitude interquartílica.
+ 
+ - Passo 1: \textbf{ordenar}.
+ 
+```{r, echo=FALSE}
+
+q <- data.frame(Posição = 1:15,
+           Valor = c(2, 3, 3, 4, 4, 4, 6, 6, 7, 7, 11, 11, 12, 12, 14))
+
+knitr::kable(t(q), 
+             caption = "Valores ordenados.", 
+             align ="ccc")
+```
+
+## Quartis
+
+\beginAHalfColumn
+
+\textbf{Exemplo}
+
+- Passo 2: \textbf{obter o segundo quartil (mediana)}.
+  - Número de elementos: $15$.
+  - Posição do segundo quartil: $8$.
+  - Valor do segundo quartil: $6$.
+
+ - Passo 3: \textbf{obter a mediana dos valores da primeira parcela.}
+    - Número de elementos: $8$ (da posição 1 até 8).
+    - Posição da mediana da primeira parcela: $4,5$.
+    - Valor do segundo quartil: $(4+4)/2 = 4$.    
+
+\endColumns
+\beginAHalfColumn
+
+ - Passo 4: \textbf{obter a mediana dos valores da segunda parcela.}
+    - Número de elementos: $8$ (da posição 8 até 15).
+    - Posição da mediana da segunda parcela: $4,5$.
+    - Valor do segundo quartil: $(11+11)/2 = 11$.
+
+ - $Q_1 = 4$, $Q_2 = 6$, $Q_3 = 11$.  
+
+ - Amplitude interquartílica.
+ 
+$$AIQ = Q_3 - Q_1 = 11 - 4 = 7$$
+
+\endColumns
+
+## Quartis e o Box-plot
+
+ - O box-plot faz uso dos \textbf{quartis} para obtenção de um \textbf{gráfico}. 
+ - Com ele é possível analisar a distribuição dos dados: \textbf{posição}, \textbf{variabilidade}, \textbf{assimetria}, \textbf{valores atípicos} (outliers).
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Ilustração box-plot completo."}
+
+knitr::include_graphics("./img/boxplot0.png")
+```
+
+## Quartis e o Box-plot
+
+ - O Box-plot é construído a partir de \textbf{5 pontos} que resumem a distribuição dos dados observados: o \textbf{limite inferior}, o \textbf{1º quartil}, a \textbf{mediana}, o \textbf{3º quartil} e o \textbf{limite superior}.
+
+ - Os \textbf{limites inferior} e \textbf{superior} são utilizados para detectar observações que estão longe da massa central localizada entre o primeiro e o terceiro quartis.
+
+ - Entre o primeiro e terceiro quartil está a \textbf{mediana}. Não necessariamente a mediana estará no centro da caixa.
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Ilustração box-plot completo."}
+
+knitr::include_graphics("./img/boxplot0.png")
+```
+
+## Quartis e o Box-plot
+
+ - A construção de um box-plot inicia-se com um retângulo em que a aresta inferior coincide com o \textbf{primeiro quartil} e a superior com o \textbf{terceiro quartil}.
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Arestas de um box-plot."}
+
+knitr::include_graphics("./img/boxplot1.png")
+```
+
+## Quartis e o Box-plot
+
+ - A \textbf{mediana} é representada por um traço entre as duas arestas.
+
+ - De $Q_1$ até $Q_3$ estão $50\%$ das observações centrais, o que dá uma ideia a respeito de quão dispersos são os valores. 
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Arestas e mediana emum box-plot."}
+
+knitr::include_graphics("./img/boxplot2.png")
+```
+
+## Quartis e o Box-plot
+
+ - Para obtenção da \textbf{amplitude do box-plot} além do retângulo faz-se $[Q1-1,5AIQ; Q3+1,5AIQ]$. 
+ 
+ - Desenha-se então uma linha até estes valores. 
+    - Se estes valores excedem o mínimo e o máximo da variável, então a linha para no mínimo e no máximo da variável.
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Inclusão dos limites de um box-plot."}
+
+knitr::include_graphics("./img/boxplot3.png")
+```
+
+## Quartis e o Box-plot
+
+ - Valores além destes extremos são marcados como um ponto ou asterisco e são os candidatos a \textbf{valores atípicos}.
+
+```{r, echo = FALSE, out.width='90%', fig.align='center', fig.cap="Box-plot completo."}
+
+knitr::include_graphics("./img/boxplot0.png")
+```
+
+## Quartis e o Box-plot
+
+ - Os limitantes inferior e superior de um box-plot também são conhecidos como \textbf{valores adjacentes} ou também como \textbf{mínimo e máximo típicos}. 
+
+ - Existem outras formas de obtenção de um box-plot, como por exemplo o box-plot em que não são calculados o mínimo e máximo típicos.
+
+ - Podem-se usar também outros quantis e outros pontos de corte, ou seja, existem outras formas para detectar pontos distantes da massa de dados.
+ 
+ - A interpretação do gráfico vai depender de como ele foi construído.
+ 
+ - Quanto mais observações, mais confiável será o box-plot.
+ 
+ - Contudo, quanto mais observações é natural que surjam mais pontos além dos limites do gráfico.
+ 
+## Quartis e o Box-plot
+
+ - Os pontos fora dos limites do box-plot costumam ser chamados de \textbf{valores atípicos ou outliers}.
+ 
+ - A definição exata de outlier é bastante \textbf{subjetiva} e vai além dos box-plots. 
+ 
+ - Qualquer valor que seja muito distante dos outros valores em um conjunto de dados pode ser considerado outlier. Podemos usar o z-escore para verificar quais são os candidatos a outliers.  
+ 
+ - Ser um outlier não torna um valor inválido ou errado, mas é um indicativo de um comportamento atípico (que pode ser causado por um erro de medida por exemplo).
+
+## Quartis para dados agrupados
+
+Para calcular os quartis quando os dados estão agrupados, considere:
+
+  - $n$ é o número total de observações;
+  - $Q_i (i=1,2,3)$ é o quartil que desejamos obter;
+  - $(i \cdot n/4)$ é a posição na qual se encontra o quartil $Q_i$;
+  - $l$ é o limite inferior da classe que contem $Q_i$;
+  - $f$ é a frequência na classe que contem $Q_i$;
+  - $h$ é a amplitude na classe que contem $Q_i$;
+  - $F_{ant}$ é a frequência acumulada até a classe anterior à que contem $Q_i$.
+
+O quartil $Q_i$ é obtido aplicando-se a seguinte foŕmula:
+$$Q_i=l+\frac{(i \cdot n/4-F_{ant})}{f} \cdot h$$ 
+
+## Outras medidas
+
+ - O \textbf{mínimo} e o \textbf{máximo} também são medidas de posição relativa e fornecem informação quanto ao domínio da variável.
+ 
+ - \textbf{Quartis} são a forma mais famosa de particionamento dos dados, porém qualquer outro percentual pode ser obtido.
+
+ - Se temos um conjunto de $n$ valores, organizados de forma crescente, o $P$-ésimo percentil é um número tal que $P\%$ dos valores estejam à sua esquerda e $(100 - P)\%$ à sua direita.
+
+ - Por exemplo, se obtivermos os valores que separam a amostra em $10$ partes com frequência $1/10$, temos os decis.
+
+ - Estas \textbf{separatrizes} podem ser obtidas por meio do \textbf{gráfico de frequências acumuladas}.
+
+# Medidas de dispersão
+
+## Medidas de dispersão
+
+ - Em geral usamos uma \textbf{medida de posição central}, que nos dá uma ideia de centro dos dados.
+
+ - Mas conjuntos de dados com \textbf{diferentes valores podem gerar as mesmas medidas de posição}. 
+
+ - E mesmo com medidas de posição idênticas, um pode ser \textbf{mais disperso} que o outro.
+ 
+ - Portanto \textbf{complementamos a informação} a respeito do centro \textbf{com uma medida de dispersão}, que nos dá uma noção de quão dispersos são os dados.
+
+## Medidas de dispersão
+
+Considere os seguintes conjuntos de valores:
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+A = c(5,5,5,5,5,5,5,5,5,5)
+B = c(5,4,4,5,6,5,4,6,5,6)
+C = c(0,5,9,0,5,11,10,5,5,0)
+
+knitr::kable(t(data.frame(A)))
+knitr::kable(t(data.frame(B)))
+knitr::kable(t(data.frame(C)))
+
+#knitr::kable(t(data.frame(A=A,B=B,C=C)))
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+ - Os conjuntos apresentam valores distintos, mas as medidas de posição central (média, moda e mediana), são idênticas.
+
+\vspace{0.3cm}
+
+ - Precisamos de formas de mensurar o quanto os valores variam.
+ 
+\endColumns
+
+## Medidas de dispersão
+
+ - As medidas de dispersão são utilizadas para expressar informações como o \textbf{domínio} da variável, grau de \textbf{dispersão} ao redor do centro (\textbf{variabilidade}), e também \textbf{distanciamento} dos valores com relação ao centro.
+
+ - Estas medidas buscam mensurar o quanto os dados estão "compactados" ou "espalhados".
+
+ - Uma medida de dispersão \textbf{não pode ser negativa}: ela será zero, indicando que todos os dados são iguais, ou ela é positiva, indicando algum grau de variabilidade nos dados.
+
+## Medidas de dispersão
+
+ - As medidas de dispersão mais usadas são baseadas nas diferenças entre cada observação e uma medida de posição central, esta diferença é chamada de \textbf{desvio}.
+
+ - Um jeito de medir a variabilidade como um todo é encontrar um \textbf{valor típico para os desvios}, como uma média.
+
+ - Fazer isso com os desvios simples não é muito inteligente. Desvios negativos se anulam com os positivos e a soma dos desvios com relação a média sempre será 0.
+
+  - Uma alternativa é calcular a média dos \textbf{desvios absolutos ou quadráticos} com relação a alguma medida de posição central.
+  
+## Medidas de dispersão
+  
+ - Algumas medidas possíveis são
+   - Amplitude.
+   - Desvio absluto médio ou mediano.
+   - Variância.
+   - Desvio padrão.
+   - Coeficiente de variação.
+
+## Amplitude
+
+ - Diferença entre o \textbf{maior} e o \textbf{menor} valor da variável.
+ - Sensível a valores extremos. 
+ - Usa apenas duas medidas.
+
+$$Amp = max(y) - min(y) = y(n) - y(1)$$
+
+## Amplitude
+
+\textbf{Exemplo}
+
+ - Retomando o problema das notas de 10 alunos, em que as notas obtidas foram:
+
+$$60;\ 65;\ 77;\ 95;\ 56;\ 94;\ 97;\ 81;\ 80;\ 48$$
+
+$$Y: \text{Notas obtidas.}$$
+ 
+$$Amp = 97 - 48  = 49$$ 
+
+## Desvio absoluto médio
+
+ - Tomamos todos os \textbf{desvios absolutos} com relação a alguma medida de posição central (média ou mediana).
+ - Calculamos a \textbf{média} destes desvios.
+ - Uma medida alternativa é o \textbf{desvio absoluto mediano} em que em vez de calcular a média dos desvios absolutos calculamos a mediana.
+
+\vspace{1cm}
+
+\beginAHalfColumn
+
+$$
+DAM_{MÉDIA} = \frac{1}{n}
+      \sum_{i = 1}^n |(y_i - \overline{y})|
+$$
+    
+\endColumns
+\beginAHalfColumn
+
+$$
+DAM_{MEDIANA} =
+      \frac{1}{n} \sum_{i = 1}^n |(y_i - md)|
+$$
+
+
+
+\endColumns
+
+## Desvio absoluto médio 
+
+\textbf{Exemplo}
+
+ - Retomando o problema das notas de 10 alunos, em que as notas obtidas foram:
+
+$$60;\ 65;\ 77;\ 95;\ 56;\ 94;\ 97;\ 81;\ 80;\ 48$$
+
+ - A média é $\overline{y} = 75,3$ e a mediana é $md = 78,5$.
+
+ - Obtenha o desvio absoluto médio com relação à média e à mediana.
+
+## Desvio absoluto médio 
+
+\textbf{Exemplo - desvio absoluto médio com relação à média}
+
+$$
+DAM = \frac{1}{10}
+       \left ( |(60 - 75,3)| + |(65 - 75,3)| ... + |(80 - 75,3)| + |(48 - 75,3)| \right )
+$$
+$$
+DAM = \frac{1}{10}
+       \left ( 15,3 + 10,3 ... + 4,7  + 27,3  \right ) = 14,44
+$$
+
+
+## Desvio absoluto médio 
+
+\textbf{Exemplo - desvio absoluto médio com relação à mediana}
+
+$$
+DAM = \frac{1}{10}
+       \left ( |(60 - 78,5)| + |(65 - 78,5)| ... + |(80 - 78,5)| + |(48 - 78,5)| \right )
+$$
+$$
+DAM = \frac{1}{10}
+       \left ( 18,5 + 13,5 ... + 1,5  + 30,5  \right ) = 14,1
+$$
+
+ 
+## Variância
+
+ - Em vez dos desvios, usa a \textbf{soma dos quadrados dos desvios} em relação à média. 
+
+$$
+s^2 = \textrm{Var}(y) = \frac{1}{n - 1} \sum_{i = 1}^{n} (y_i - \overline{y})^2 = \frac{1}{n - 1}\left(\sum_{i = 1}^{n} y_i^2 - \frac{(\sum_{i = 1}^{n} y_i)^2}{n}\right)
+$$
+
+ - A \textbf{variância populacional} ($\sigma^2$): usa apenas $n$ no demominador e é usada quando temos todos os elementos da população. Caso contrário, calculamos sempre a estimativa \textbf{amostral} ($s^2$).
+
+ - A justificativa teórica para isso está relacionada com \textbf{estimadores não viciados} e com a \textbf{distribuição amostral da média}, tópicos discutidos em inferência estatística.
+ 
+## Desvio padrão
+ 
+ - Para ter uma medida de dispersão com a \textbf{mesma unidade de medida dos dados originais} definiu-se o \textbf{desvio padrão} como a raiz quadrada da variância.
+
+$$
+s = \sqrt{s^2}
+$$
+
+ - A \textbf{variância} e o \textbf{desvio padrão} são \textbf{invariantes} com respeito a localização dos dados. Isso significa que, se somarmos ou subtrairmos uma constante em todos os valores, não alteramos a dispersão.
+
+## Lei de Chebyshev
+
+ - Independente da forma da distribuição dos dados e de sua variabilidade, conhecemos a \textbf{proporção mínima dos valores contidos em intervalos simétricos em relação à média}:
+
+    - Pelo menos $3/4$ ($75\%$) dos valores estão no intervalo $(\bar{y} - 2s, \bar{y} + 2s)$.
+ 
+    - Pelo menos $8/9$ ($89\%$) dos valores estão no intervalo $(\bar{y} - 3s, \bar{y} + 3s)$.
+ 
+    - Pelos menos ($1 - 1/k^2$) dos dados estará no intervalo $(\bar{y} - ks, \bar{y} + ks)$.
+
+## Variância e desvio padrão
+
+\textbf{Exemplo}
+
+ - Retomando o problema das notas de 10 alunos, em que as notas obtidas foram:
+
+$$60;\ 65;\ 77;\ 95;\ 56;\ 94;\ 97;\ 81;\ 80;\ 48$$
+
+ - A média é $\overline{y} = 75,3$.
+
+ - Obtenha o variância e desvio padrão.
+
+## Variância e desvio padrão
+
+\textbf{Exemplo}
+
+ - Primeira maneira:
+ 
+$$
+s^2 = \textrm{Var}(y) = \frac{1}{10 - 1} \left ( (60 - 75,3)^2 + (65 - 75,3)^2 + ... + (80 - 75,3)^2 + (48 - 75,3)^2   \right )
+$$
+
+$$
+s^2 = \textrm{Var}(y) = \frac{1}{9} \left ( (-15,3)^2 + (-10,3)^2 + ... + (4,7)^2 + (-27,3)^2   \right )
+$$
+
+$$
+s^2 = \textrm{Var}(y) = \frac{1}{9} \left ( 234,09 + 106,09 + ... + 22,09 + 745,29 \right ) = 302,68
+$$
+
+$$ s = \sqrt{s^2} = \sqrt{302,68} = 17,4$$
+
+## Variância e desvio padrão
+
+\textbf{Exemplo}
+
+ - Segunda maneira:
+ 
+$$
+s^2 = \textrm{Var}(y) = \frac{1}{n - 1}\left(\sum_{i = 1}^{n} y_i^2 - \frac{(\sum_{i = 1}^{n} y_i)^2}{n}\right)
+$$
+
+$$
+s^2 = \textrm{Var}(y) = \frac{1}{9}\left(59425
+ - \frac{753^2}{10}\right) = \frac{1}{9}\left(59425
+ - 56700.9\right) = 302,68
+$$
+
+$$ s = \sqrt{s^2} = \sqrt{302,68} = 17,4$$
+
+
+## Coeficiente de variação
+
+ - Medida de variabilidade relativa à média.
+ - Quociente do desvio-padrão pela média.
+ - \textbf{Medida adimensional}, geralmente apresentada na forma de porcentagem.
+ - Permite comparar a variabilidade de variáveis de diferentes naturezas
+
+$$
+\textrm{CV} = 100 \cdot \frac{s}{\overline{y}}
+$$
+
+## Coeficiente de variação
+
+\textbf{Exemplo}
+
+ - Retomando o problema das notas de 10 alunos, em que as notas obtidas foram:
+
+$$60;\ 65;\ 77;\ 95;\ 56;\ 94;\ 97;\ 81;\ 80;\ 48$$
+
+ - A média é $\overline{y} = 75,3$ e o desvio padrão é $s = 17,4$.
+
+ - Obtenha o coeficiente de variação.
+ 
+$$
+\textrm{CV} = 100 \cdot \frac{17,4}{75,3} = 23,11
+$$
+
+## z-escore
+
+ - O z-escore pode ser visto como uma \textbf{medida de variabilidade individual} que nos diz quantos desvios padrões determinada observação está distante da média dos dados.
+
+ - O z-escore é dado por:
+ 
+$$z = \frac{y_i-\bar{y}}{s}$$
+
+## z-escore
+
+\textbf{Exemplo}
+
+ - No problema das notas de 10 alunos, em que as notas obtidas foram:
+
+$$60;\ 65;\ 77;\ 95;\ 56;\ 94;\ 97;\ 81;\ 80;\ 48$$
+
+os z-escores para cada nota seriam:
+
+$$-0,8794;\ -0,5920;\  0,0977;\  1,1323;\ -1,1093;\  1,0749;\  1,2473;\  0,3276;\  0,2702;\ -1,5692$$
+
+## Dispersão para variáveis qualitativas
+
+ - Para variáveis qualitativas a \textbf{moda} é a única medida de posição que faz sentido.
+ 
+ - Como medida de dispersão, a ideia de \textbf{entropia} pode ser usada.
+
+ - Uma proposta, chamada de \textbf{índice de Shannon}, é dada por:
+ 
+$$H = - \sum_{i=1}^{S} f_r ln(f_r)$$
+
+ - Em que $S$ representa o número de categorias da variável e $f_r$ representa a frequência relativa associada à categoria $i$.
+ 
+ - Quanto mais distante de $0$ for o valor de $H$, mais heterogênea é a variável.
+
+## Dispersão para variáveis qualitativas
+
+Qual é o mais homogêneo? Qual é o mais heterogêneo?
+
+```{r, echo=FALSE, fig.height=3}
+
+M <- cbind(c(96,1,1,1,1),
+           c(10,10,60,10,10),
+           c(10,30,10,20,30),
+           c(20,20,20,20,20)
+           )/100
+
+colnames(M) <- LETTERS[1:4]
+
+f <- function(x) -sum(x*log(x))
+
+tabela <- t(M)
+colnames(tabela) <- c("$f_{r1}$", "$f_{r2}$", 
+                      "$f_{r3}$", "$f_{r4}$", "$f_{r5}$")
+
+tabela_df <- data.frame(cenario = sort(rep(LETTERS[1:4],5)),
+                     nivel = factor(rep(1:5, 4)),
+                     pi = c(tabela[1,],
+                            tabela[2,],
+                            tabela[3,],
+                            tabela[4,]))
+
+ggplot(data=tabela_df, 
+       aes(x=cenario, 
+           y=pi, 
+           fill = nivel
+       )) + 
+  geom_bar(stat="identity",
+           position = "dodge",
+           col=1,
+           lwd=1)+
+  ylab("Frequência relativa") +
+  xlab("") +
+  #ggtitle("Gráfico de barras para o meio de transporte dos alunos.")+
+  theme_classic() + theme(legend.position = 'none',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+
+knitr::kable(tabela)
+```
+
+## Dispersão para variáveis qualitativas
+
+Qual é o mais homogêneo? Qual é o mais heterogêneo?
+
+```{r, echo=FALSE, fig.height=3, message=FALSE, warning=FALSE}
+
+ggplot(data=tabela_df, 
+       aes(x=cenario, 
+           y=pi, 
+           fill = nivel
+       )) + 
+  geom_bar(stat="identity",
+           position = "dodge",
+           col=1,
+           lwd=1)+
+  ylab("Frequência relativa") +
+  xlab("") +
+  #ggtitle("Gráfico de barras para o meio de transporte dos alunos.")+
+  theme_classic() + theme(legend.position = 'none',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+
+tabela <- as.data.frame(tabela)
+tabela$H <- as.vector(round(t(apply(M, 2, f)), dig=3))
+
+knitr::kable(tabela)
+
+```
+
+
+## Desvio, variância, desvio padrão, coeficiente de variação, entropia
+
+
+ - Amplitude, desvio absoluto médio, variância e desvio padrão são \textbf{sensíveis a valores extremos}. Variância e desvio padrão ainda mais por serem baseados nos desvios quadráticos.
+
+ - \textbf{Variância} e \textbf{desvio padrão} tem \textbf{propriedades favoráveis}.
+
+ - O \textbf{desvio absoluto mediano da mediana} é uma medida que \textbf{não é influenciada}, assim como variâncias e desvios padrões aparados.
+ 
+ - Quando a distribuição dos dados é \textbf{simétrica} estas medidas tendem a convergir.
+ 
+ - O \textbf{coeficiente de variação} permite comparar a variabilidade de variáveis em \textbf{diferentes escalas}.
+
+ - O \textbf{z-escore} pode ser usado como uma medida de \textbf{variabilidade individual}.
+ 
+ - Para \textbf{variáveis qualitativas} existem medidas específicas, como o \textbf{índice de Shannon}.
+ 
+# Análise exploratória bivariada
+
+## Análise exploratória bivariada
+
+\beginAHalfColumn
+
+ - Em alguns casos podemos estar interessados na análise de \textbf{duas variáveis simultaneamente}.
+
+\vspace{0.3cm}
+
+ - O objetivo é investigar a relação de \textbf{associação} entre as variáveis.
+
+\vspace{0.3cm}
+
+ - \textbf{Tabelas}, \textbf{gráficos} e \textbf{coeficientes} específicos para relação entre variáveis podem ser usados.
+
+\endColumns
+\beginAHalfColumn
+
+ - Tal como nas análises univariadas, as escolhas dependem dos tipos das variáveis.
+
+\vspace{0.3 cm}
+
+ - Considerando variáveis aos pares, as combinações podem ser:
+    - Qualitativa x qualitativa.
+    - Quantitativa x quantitativa.
+    - Quantitativa x qualitativa.
+
+\endColumns
+
+# Análise bivariada para variáveis qualitativas
+
+## Análise bivariada para variáveis qualitativas
+
+ - Neste tipo de situação avaliamos a \textbf{frequência} de observações para cada \textbf{combinação} de níveis das duas variáveis.
+
+ - Podem ser usadas \textbf{tabelas de frequências cruzadas}, também chamadas de \textbf{tabelas de dupla entrada}.
+
+ - Também é possível representar as frequências por meio de \textbf{recursos gráficos}.
+
+## Tabelas de frequências cruzadas
+
+ - As \textbf{linhas} dizem respeito aos \textbf{níveis} de uma variável.
+ - As \textbf{colunas} aos \textbf{níveis} da outra variável.
+ - As \textbf{células} mostram as \textbf{frequências} (absolutas ou relativas).
+ - As tabelas de dupla entrada também são chamadas de \textbf{distribuição conjunta}.
+ - As \textbf{margens} mostram as \textbf{frequências marginais} (de apenas uma das duas variáveis), também chamada de \textbf{distribuição marginal}.
+ - No caso de frequências relativas podem ser usados o \textbf{total geral} ou os totais \textbf{linha} e \textbf{coluna}.
+
+## Tabelas de frequências cruzadas
+
+```{r, echo=FALSE}
+milsa <- read.csv("milsa.csv")
+
+tabela <- table(milsa$estado_civil,
+                 milsa$regiao)
+
+tabela1 <- addmargins(tabela)
+
+colnames(tabela1)[ncol(tabela1)] <- "Total"
+row.names(tabela1)[nrow(tabela1)] <- "Total"
+
+knitr::kable(round(tabela1, 2), 
+             caption = "Tabela de dupla entrada usando frequências absolutas.", 
+             align ="ccc" )
+```
+
+## Tabelas de frequências cruzadas
+
+```{r, echo=FALSE}
+tabela4 <- prop.table(tabela)
+
+tabela4 <- addmargins(tabela4)
+
+colnames(tabela4)[ncol(tabela4)] <- "Total"
+row.names(tabela4)[nrow(tabela4)] <- "Total"
+
+knitr::kable(round(tabela4, 2), 
+             caption = "Tabela de dupla entrada usando frequências relativas.", 
+             align ="ccc" )
+```
+
+## Tabelas de frequências cruzadas
+
+```{r, echo=FALSE}
+
+tabela2 <- prop.table(tabela,
+                      margin = 1)
+
+tabela2 <- addmargins(tabela2)
+
+colnames(tabela2)[ncol(tabela2)] <- "Total"
+row.names(tabela2)[nrow(tabela2)] <- "Total"
+
+tabela2[3,] <- tabela1[3,]/nrow(milsa)
+
+knitr::kable(round(tabela2, 2), 
+             caption = "Tabela de dupla entrada usando frequências relativas aos totais linha.", 
+             align ="ccc" )
+```
+
+## Tabelas de frequências cruzadas
+
+```{r, echo=FALSE}
+tabela3 <- prop.table(tabela,
+                      margin = 2)
+
+tabela3 <- addmargins(tabela3)
+
+colnames(tabela3)[ncol(tabela3)] <- "Total"
+row.names(tabela3)[nrow(tabela3)] <- "Total"
+
+tabela3[,4] <- tabela1[,4]/nrow(milsa)
+
+knitr::kable(round(tabela3, 2), 
+             caption = "Tabela de dupla entrada usando frequências relativas aos totais coluna.", 
+             align ="ccc" )
+```
+
+## Análise bivariada para variáveis qualitativas
+
+\beginAHalfColumn
+
+ - As \textbf{frequências cruzadas} podem ser representadas por meio de gráficos.
+
+\vspace{0.3cm}
+
+ - Variações de \textbf{gráficos de barras} são as opções mais comuns.
+
+\vspace{0.3cm}
+
+ - As possibilidades podem usar as \textbf{frequências absolutas}, \textbf{relativas} e permitem comparar a \textbf{composição} das variáveis.
+
+\endColumns
+\beginAHalfColumn
+
+ - Gráficos para frequência para duas variáveis qualitativas:
+    - Gráficos de barras lado a lado.
+    - Gráfico de barras empilhadas.
+    - Gráficos de barras empilhadas relativo.
+
+\endColumns
+
+## Gráficos de barras lado a lado
+
+```{r, echo=FALSE, fig.cap="Gráfico de barras lado a lado."}
+
+tabela_df <- as.data.frame(tabela)
+names(tabela_df) <- c("Estado civil", 
+                      "Região",
+                      "Freq")
+
+ggplot(data = tabela_df, 
+       aes(x=`Estado civil`, y=Freq, fill=Região)) + 
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1, 
+           position = 'dodge') +  
+  ylim(c(0, 
+         (max(tabela_df$Freq)+ (max(tabela_df$Freq)*0.1))))+
+  geom_text(aes(label = Freq),
+            #hjust=-0.1, 
+            color=1, 
+            size=8, 
+            position=position_dodge(width=0.9),
+            vjust=-0.5
+  )+
+  xlab("") +
+  ylab("") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'top',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          #axis.text = element_blank(),
+                          #legend.title = element_blank(),
+                          text = element_text(size=15)) 
+```
+
+## Gráficos de barras lado a lado
+
+```{r, echo=FALSE, fig.cap="Gráfico de barras lado a lado."}
+
+ggplot(data = tabela_df, 
+       aes(x=Região, y=Freq, fill=`Estado civil`)) + 
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1, 
+           position = 'dodge') +  
+  ylim(c(0, 
+         (max(tabela_df$Freq)+ (max(tabela_df$Freq)*0.1))))+
+  geom_text(aes(label = Freq),
+            #hjust=-0.1, 
+            color=1, 
+            size=8, 
+            position=position_dodge(width=0.9),
+            vjust=-0.5
+  )+
+  xlab("") +
+  ylab("") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'top',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          #axis.text = element_blank(),
+                          #legend.title = element_blank(),
+                          text = element_text(size=15)) 
+```
+
+## Gráficos de barras empilhadas
+
+```{r, echo=FALSE, fig.cap="Gráfico de barras empilhadas."}
+
+ggplot(tabela_df, 
+       aes(x=`Estado civil`, y=Freq, fill=Região)) + 
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1)+ 
+  #  geom_text(aes(label = freq_r),
+  #            hjust=0.5, 
+  #            color=1, 
+  #            size=8, 
+  #            position=position_stack(), 
+  #            vjust=1)+
+  xlab("") +
+  ylab("") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'top',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          #axis.text = element_blank(),
+                          #legend.title = element_blank(),
+                          text = element_text(size=15)) 
+```
+
+## Gráficos de barras empilhadas
+
+```{r, echo=FALSE, fig.cap="Gráfico de barras empilhadas."}
+
+ggplot(tabela_df, 
+       aes(x=Região, y=Freq, fill=`Estado civil`)) + 
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1)+ 
+  #  geom_text(aes(label = freq_r),
+  #            hjust=0.5, 
+  #            color=1, 
+  #            size=8, 
+  #            position=position_stack(), 
+  #            vjust=1)+
+  xlab("") +
+  ylab("") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'top',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          #axis.text = element_blank(),
+                          #legend.title = element_blank(),
+                          text = element_text(size=15)) 
+```
+
+
+
+## Gráficos de barras empilhadas relativo
+
+```{r, echo=FALSE, fig.cap="Gráfico de barras empilhadas relativo."}
+
+table_df <- as.data.frame(prop.table(tabela, margin = 1))
+names(table_df) <- c("Estado civil", "Região", "Freq")
+
+ggplot(table_df, 
+       aes(x=`Estado civil`, y=Freq, fill=Região)) + 
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1)+ 
+  #  geom_text(aes(label = freq_r),
+  #            hjust=0.5, 
+  #            color=1, 
+  #            size=8, 
+  #            position=position_stack(), 
+  #            vjust=1)+
+  xlab("") +
+  ylab("") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'top',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          #axis.text = element_blank(),
+                          #legend.title = element_blank(),
+                          text = element_text(size=15)) 
+
+```
+
+## Gráficos de barras empilhadas relativo
+
+```{r, echo=FALSE, fig.cap="Gráfico de barras empilhadas relativo."}
+
+table_df <- as.data.frame(prop.table(tabela, margin = 2))
+names(table_df) <- c("Estado civil", "Região", "Freq")
+
+ggplot(table_df, 
+       aes(x=Região, y=Freq, fill=`Estado civil`)) + 
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1)+ 
+  #  geom_text(aes(label = freq_r),
+  #            hjust=0.5, 
+  #            color=1, 
+  #            size=8, 
+  #            position=position_stack(), 
+  #            vjust=1)+
+  xlab("") +
+  ylab("") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'top',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          #axis.text = element_blank(),
+                          #legend.title = element_blank(),
+                          text = element_text(size=15)) 
+
+```
+
+## Medidas de associação para variáveis qualitativas
+
+ - Existem \textbf{medidas} que visam quantificar o \textbf{grau de associação} entre variáveis qualitativas.
+ 
+ - Uma dessas medidas é chamada de \textbf{Qui-quadrado}.
+ 
+ - Esta medida compara as \textbf{frequências observadas} em uma tabela de dupla entrada com as \textbf{frequências esperadas} caso não houvesse associação.
+ 
+ - Para obter a tabela de valores esperados basta, para cada casela, obter o produto entre o total da respectiva linha pelo total da respectiva coluna e dividir pelo total geral.
+
+## Medidas de associação para variáveis qualitativas
+
+ - O qui-quadrado é dado por:
+ 
+$$Q = \sum_{i=1}^{r} \sum_{j=1}^{s} \frac{(o_{ij} - e_{ij})^2}{e_{ij}}$$ 
+
+ - Quanto mais próximo de 0, menor a evidência de associação.
+
+ - Como o valor é irrestrito, existem variações desta quantidade que visam ter os limites definidos.
+
+## Medidas de associação para variáveis qualitativas
+
+```{r, echo=FALSE}
+tabela <- table(milsa$estado_civil,
+                milsa$regiao)
+
+tabela1 <- addmargins(tabela)
+
+colnames(tabela1)[ncol(tabela1)] <- "Total"
+row.names(tabela1)[nrow(tabela1)] <- "Total"
+
+knitr::kable(round(tabela1, 2), 
+             caption = "Valores observados.", 
+             align ="ccc" )
+
+tabela2 <- chisq.test(tabela)$expected
+
+tabela2 <- addmargins(tabela2)
+
+colnames(tabela2)[ncol(tabela2)] <- "Total"
+row.names(tabela2)[nrow(tabela2)] <- "Total"
+
+knitr::kable(round(tabela2, 2), 
+             caption = "Valores esperados.", 
+             align ="ccc" )
+```
+
+## Medidas de associação para variáveis qualitativas
+
+```{r, echo=FALSE}
+
+knitr::kable(round((tabela - chisq.test(tabela)$expected)^2/chisq.test(tabela)$expected, 2), 
+             caption = "$\\frac{(o-e)^2}{e}$.", 
+             align ="ccc" )
+
+```
+
+$$Q = \sum_{i=1}^{r} \sum_{j=1}^{s} \frac{(o_{ij} - e_{ij})^2}{e_{ij}} = 2,42$$ 
+
+# Análise bivariada para variáveis quantitativas
+
+## Análise bivariada para variáveis quantitativas
+
+\beginAHalfColumn
+
+  - Buscamos identificar \textbf{padrões} e \textbf{tendências} na análise das duas variáveis.
+      - A medida que os valores de uma variável aumentam, a outra reduz?
+      - A medida que os valores de uma variável aumentam, a outra aumenta?
+      - A medida que os valores de uma variável aumentam, a outra se mantém estável?
+
+\endColumns
+\beginAHalfColumn
+
+ - As principais técnicas são o \textbf{coeficiente de correlação} e o \textbf{diagrama de dispersão}.  
+    - O coeficiente é uma métrica que avalia a associação linear entre um par de variáveis numéricas.
+    - O diagrama é um gráfico de pares ordenados.
+
+\endColumns
+
+## Diagrama de dispersão
+
+ - O \textbf{diagrama de dispersão} é a principal ferramenta para visualizar duas variáveis quantitativas.
+ 
+ - Em um eixo são representados os valores de uma variável.
+ 
+ - No outro eixo os valores de uma segunda variável.
+ 
+ - Os pares ordenados são representados por pontos.
+
+## Interpretação gráfica
+
+```{r, echo=FALSE, fig.cap="Avaliação de correlação usando diagramas de dispersão.", message=FALSE, results='hide', fig.width=12}
+
+set.seed(2)
+v1 = rnorm(1000)
+v2 = rnorm(1000)
+x = v1*2
+y = v1+v2
+z = v1-v2
+k = v1*(-2)
+df <- data.frame(x=x,y=y,z=z,k=k)
+
+
+g1 <- ggplot(data = df, 
+       mapping = aes(x = y,
+                     y = x)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se=F, col=2)+
+  #geom_smooth(se=F)+
+  xlab("X") +
+  ylab("Y") +
+  ggtitle("Correlação positiva")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+
+g2 <- ggplot(data = df, 
+       mapping = aes(x = y,
+                     y = z)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se=F, col=2)+
+  #geom_smooth(se=F)+
+  xlab("X") +
+  ylab("Y") +
+  ggtitle("Ausência de correlação")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+
+g3 <- ggplot(data = df, 
+       mapping = aes(x = k,
+                     y = z)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se=F, col=2)+
+  #geom_smooth(se=F)+
+  xlab("X") +
+  ylab("Y") +
+  ggtitle("Correlação negativa")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+
+
+
+
+ggpubr::ggarrange(g1,g2,g3, nrow = 1)
+
+```
+
+## Diagrama de dispersão
+
+```{r, echo=FALSE, fig.cap="Diagrama de dispersão para o salário em função da idade.", message=FALSE, results='hide'}
+ggplot(data = milsa, 
+       mapping = aes(x = anos,
+                     y = salario)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se=F, col=2)+
+  #geom_smooth(se=F)+
+  xlab("Idade") +
+  ylab("Salário") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+
+
+
+
+
+
+## Coeficiente de correlação linear de Pearson
+
+\beginAHalfColumn
+
+- Usado para determinar se existe \textbf{relação linear} entre variáveis quantitativas.
+    - Assume valores entre -1 e 1. 
+    - Se o valor é maior 0, então existe uma associação linear \textbf{positiva}.
+    - Se o valor é menor que 0, então existe uma associação linear \textbf{negativa}.
+    - Se o valor é igual a 0, então \textbf{não existe} uma associação linear.
+
+\endColumns
+\beginAHalfColumn
+
+ - **CORRELAÇÃO NÃO IMPLICA EM CAUSALIDADE**.
+    - O fato de existir uma correlação linear, seja positiva ou negativa, não implica que uma variável possui real influência nos desfechos da outra.
+    - Causalidade causa correlação, mas correlação não implica em causalidade.
+
+\endColumns
+
+
+## Covariância e correlação
+
+ - A covariância entre duas variáveis $Y_1$ e $Y_2$ é dada por:
+
+$$
+\textrm{Cov}(y_1, y_2) = \frac{1}{n - 1}
+         \displaystyle\sum_{i = 1}^{n}
+         (y_{1i} - \overline{y}_1)\cdot
+         (y_{2i} - \overline{y}_2).
+$$
+
+ - A partir da covariância podemos obter a correlação, que padroniza a medida pelas variâncias, fazendo com que, independente das variáveis, sempre seja um valor entre -1 e 1.
+
+$$
+    r = \frac{\sum_{i = 1}^{n}
+      (y_{1i} - \overline{y}_1)\cdot (y_{2i} - \overline{y}_2)}{
+      \sqrt{\sum_{i = 1}^{n} (y_{1i} - \overline{y}_1)^2}\cdot
+      \sqrt{\sum_{i = 1}^{n} (y_{2i} - \overline{y}_2)^2}} =
+      \frac{\textrm{Cov}(y_1, y_2)}{
+        \sqrt{\textrm{V}(y_1)\cdot \textrm{V}(y_2)}}.
+$$
+
+## Outros tipos de correlação
+
+\beginAHalfColumn
+
+ - A correlação de Pearson não serve para descrever associações que não sejam lineares.
+
+\vspace{0.3cm}
+
+ - Existem outros tipos de correlação que servem inclusive para variáveis de outros tipos.
+
+\endColumns
+\beginAHalfColumn
+
+ - Alguns exemplos são:
+   - Correlação de Spearman.
+   - Correlação de Kendall.
+   - Ponto-bisserial.
+
+\endColumns
+
+
+
+## Covariância, correlação e diagrama de dispersão
+
+\textbf{Exemplo}
+
+ - Considere as variáveis peso ($Y_1$) e altura ($Y_2$) de um conjunto de 10 indivíduos.
+ 
+$$Y_1: 60,09; 57,97; 54,12; 70,76; 59,74; 50,41; 58,19; 65,35; 71,18; 54,76$$
+
+$$Y_2: 1,54; 1,62; 1,52; 1,76; 1,63; 1,52; 1,65; 1,67; 1,66; 1,57$$
+
+ - $\overline{Y_1} = 60,26$; $\overline{Y_2} = 1,61$.
+ 
+ - $Var(Y_1) = 47,8$; $Var(Y_2) = 0,006$.
+ 
+ - Obtenha a covariância, coeficiente de correlação e o diagrama de dispersão.
+
+## Covariância, correlação e diagrama de dispersão
+
+\textbf{Exemplo}
+
+$$
+\textrm{Cov}(y_1, y_2) = \frac{1}{10 - 1} \displaystyle \left \{ \left [ (60,09 - 60,26)\cdot (1,54 - 1,61) \right ] + ... + \left [ (57,76 - 60,26)\cdot (1,57 - 1,61)) \right ] \right \}
+$$
+
+$$
+\textrm{Cov}(y_1, y_2) = 0,44
+$$
+
+$$
+r  = \frac{0,44}{\sqrt{47,8\cdot 0,006}} = 0,82
+$$
+
+
+## Covariância, correlação e diagrama de dispersão
+
+\textbf{Exemplo - digrama de dispersão}
+
+```{r, echo=FALSE, fig.cap="Diagrama de dispersão para peso e altura.", out.width="65%"}
+set.seed(1)
+altura <- round(rnorm(10,1.6,0.1), 2)
+peso <- (altura-1)*100
+ruido <- runif(10,-7,7)
+peso <- round(peso + ruido, 2)
+
+ggplot(data = data.frame(peso, altura), 
+       mapping = aes(x = altura,
+                     y = peso)) +
+  geom_point()+
+  #geom_smooth(method = 'lm', se=F, col=2)+
+  #geom_smooth(se=F)+
+  xlab("Altura") +
+  ylab("Peso") +
+  ggtitle("Peso em função de altura")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+```
+
+## Covariância, correlação e diagrama de dispersão
+
+\textbf{Exemplo - digrama de dispersão}
+
+```{r, echo=FALSE, fig.cap="Diagrama de dispersão para peso e altura com linha de tendência linear.", results='hide', message=FALSE, out.width="65%"}
+
+ggplot(data = data.frame(peso, altura), 
+       mapping = aes(x = altura,
+                     y = peso)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se=F, col=2)+
+  #geom_smooth(se=F)+
+  xlab("Altura") +
+  ylab("Peso") +
+  ggtitle("Peso em função de altura")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+```
+
+# Análise bivariada para uma variável qualitativa e uma quantitativa
+
+## Análise bivariada para uma variável qualitativa e uma quantitativa
+
+ - Neste caso estamos interessados em avaliar se os valores da variável numérica estão associados com os níveis da variável categórica.
+
+ - Podemos usar \textbf{medidas descritivas} para os valores dentro de cada um dos níveis da variável categórica.
+
+ - Para representar graficamente esta situação podemos criar um \textbf{box-plot} da variável numérica para cada nível do fator de interesse.
+
+## Tabela de medidas descritivas para níveis de um fator
+
+```{r, echo=FALSE}
+
+tabela <- milsa %>% 
+  group_by(regiao) %>% 
+  summarise(Média = round(mean(salario), 2),
+            Mediana = round(median(salario), 2),
+            `Desvio padrão` = round(sd(salario), 2))
+
+names(tabela)[1] <- "Região"
+
+knitr::kable(tabela, 
+             caption = "Medidas descritivas do salário em função da região.", 
+             align ="ccc" )
+
+
+```
+
+## Box-plot para níveis de um fator
+
+```{r, echo=FALSE, fig.cap="box-plots para o salário em função da região."}
+ggplot(data = milsa, 
+       mapping = aes(x = regiao,
+                     y=salario)) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1,
+               fill = '#E0F8F7')+
+  xlab("Região") +
+  ylab("Salário") +
+  #ggtitle("Gráfico")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+# Outros tipos de gráficos e análises
+
+## Outros tipos de gráficos e análises
+
+\beginAHalfColumn
+
+ - Vimos as alternativas usuais para representação e análise de variáveis quantitativas e qualitativas.
+
+\vspace{0.3cm}
+
+ - Contudo existem diversas situações particulares que exigem análises específicas.
+
+\endColumns
+\beginAHalfColumn
+
+ - Algumas casos são: mapas, séries temporais, gráficos de perfil, nuvens de palavras.
+
+\vspace{0.3cm}
+
+  - Também é possível trabalhar com gráficos que representam mais de duas variáveis ao mesmo tempo.
+
+\vspace{0.3cm}
+
+  - Outra possibilidade é combinar gráficos.
+
+\endColumns
+
+## 
+
+\beginAHalfColumn
+
+\textbf{O que foi visto:}
+
+ - Resumos numéricos.
+ - Medidas de posição central.
+ - Medidas de posição relativa.
+ - Medidas de dispersão.
+ - Análises bivariadas.
+    - Qualitativa x qualitativa.
+    - Quantitativa x quantitativa.
+    - Quantitativa x qualitativa.
+    
+\endColumns
+\beginAHalfColumn
+
+\textbf{Próximos assuntos:}
+
+ - Revisando conceitos e extraindo informações de um conjunto de dados real com R.
+ - Considerações finais.
+
+\endColumns

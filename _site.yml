@@ -1,0 +1,113 @@
+name: "AED - Compolítica"
+
+output_dir: "."
+
+navbar:
+  #type: inverse
+  title: "Análise Exploratória de Dados"
+
+  left:
+    - text: "Home"
+      icon: fa-home
+      href: index.html
+
+    - text: "Aulas"
+      icon: fa-person-chalkboard
+      menu:
+        
+        - text: "---"
+         
+        - text: "Encontro 1"
+        
+        - text: "Aula"
+          icon: fa-arrow-right
+          href: encontros/encontro1.pdf
+
+        - text: "Exercícios"
+          icon: fa-arrow-right
+          href: praticas/exercicios-encontro1-solucao.pdf
+
+        - text: "---"
+
+        - text: "Encontro 2"
+        
+        - text: "Aula"
+          icon: fa-arrow-right
+          href: encontros/encontro2.pdf
+
+        - text: "Exercícios"
+          icon: fa-arrow-right
+          href: praticas/exercicios-encontro2-solucao.pdf
+
+        - text: "---"
+         
+        - text: "Encontro 3"
+
+        - text: "From Data to Viz"
+          icon: fa-arrow-right
+          href: https://www.data-to-viz.com/
+
+        - text: "Script"
+          icon: fa-arrow-right
+          #href: encontros/encontro3.html
+
+        - text: "Dados"
+          icon: fa-arrow-right
+          #href: encontros/dados/dados_vdem_aula.csv
+
+        - text: "---"
+
+
+
+    - text: "Outros materiais"
+      icon: fa-pen-to-square
+      menu:
+
+        - text: "Introdução ao R"
+          icon: fa-arrow-right
+          href: encontros/intro-R.pdf
+
+        - text: "Um curso de Estatística Básica"
+          icon: fa-arrow-right
+          href: https://lineu96.github.io/CE3012024/
+
+        - text: "Introdução à Visualização de Dados Aplicada"
+          icon: fa-arrow-right
+          href: http://leg.ufpr.br/~ara/teach/viz2025.html
+
+        - text: "The R Graph Gallery"
+          icon: fa-arrow-right
+          href: https://r-graph-gallery.com/
+
+          
+  right:
+    - text: "Lineu Alberto"
+      icon: fa-user-tie 
+      href: https://lineu96.github.io/
+
+output:
+  html_document:
+    theme: flatly
+    # default
+    ## united
+    # cosmo
+    # yeti
+    
+    #spacelab
+    #cosmo
+    
+    highlight: textmate
+    #include:
+    #  after_body: footer.html
+    #css: styles.css
+
+    # THEMES
+    # default, cerulean, journal, 
+    # flatly, darkly, readable, 
+    # spacelab, united, cosmo, 
+    # lumen, paper, sandstone, 
+    # simplex, and yeti
+    includes:
+      
+      #before_body: header.html
+      

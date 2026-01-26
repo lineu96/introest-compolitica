@@ -1,0 +1,117 @@
+---
+title: Introdução à Estatística
+subtitle:  | 
+ | Fundamentos de Análise Exploratória de Dados
+ | Conceitos e Aplicações
+ | 
+author: |
+ |
+ | Prof. Me. Lineu Alberto Cavazani de Freitas \vspace{-0.5cm}
+date: ""
+output:
+  html_document:                    
+    #toc: true                       
+    #toc_depth: 3                    
+    #toc_float:                      
+    #  collapsed: true
+    #  smooth_scroll: true
+    #number_sections: true           
+    #theme: default
+    #spacelab
+    #default,cerulean,journal,flatly,readable,spacelab,
+    #united,cosmo,lumen,paper,sandstone,simplex,yeti
+    
+    highlight: espresso
+    #default, tango, pygments, kate, monochrome, espresso, zenburn, haddock, and textmate
+    #css: styles.css                
+    fig_width: 7                    
+    fig_height: 6                   
+    fig_caption: true               
+    fig_align: 'center'
+    #code_folding: hide              
+#    keep_md: true
+---
+
+---
+
+## Detalhes
+
+**Curso**: [Introdução à Estatística | Fundamentos de Análise Exploratória de Dados | Conceitos e Aplicações](https://www.sympla.com.br/evento-online/escola-de-verao-inct-dd-compolitica-2026/3257554?referrer=inctdd.org&referrer=inctdd.org)
+
+**Público Alvo**: Pesquisadores em Comunicação e Política com interesse em conhecer ou aprimorar os conhecimentos em técnicas de Análise Exploratória de Dados.
+
+**Desejável**: R básico.
+
+ - No último encontro do curso será conduzida uma Análise Exploratória de Dados de um conjunto de dados real utilizando a linguagem R e a IDE RStudio. 
+ - O não conhecimento da linguagem não inviabiliza a participação no curso. 
+ - O R será usado como ferramenta de reforço de aprendizado, porém não trata-se de um curso de R!
+
+**Professor responsável**: **[Lineu Alberto Cavazani de Freitas](https://lineu96.github.io/)**.
+
+**E-mail para contato**: lineuacf@gmail.com
+
+**Carga Horária**: 9 horas.
+
+**Formato**: Curso remoto. Os inscritos receberão os links das salas em seus e-mails.
+
+**Dias e horários**: 26/01/2025, 28/01/2025 e 30/01/2025 das 18h até 21h.
+
+---
+
+## Programa e objetivos
+
+O objetivo do curso é fornecer uma visão geral de Estatística e capacitar os participantes em conceitos básicos de Análise Exploratória de Dados que permitam a interpretação crítica de resultados bem como a execução de procedimentos e análises exploratórias básicas dos tipos de variáveis mais comuns por meio de tabelas, gráficos e medidas resumo. 
+
+O curso compreende três encontros:
+
+**Encontro 1**
+
+- Apresentação do curso.
+- Introdução: Ideias iniciais, conceitos e motivações sobre Estatística.
+- Dados e amostragem: Conjunto de dados, tipos de variáveis, fontes de dados, amostragem probabilística e não probabilística.
+- Gráficos e tabelas para variáveis qualitativas e quantitativas.
+
+**Encontro 2**
+
+- Resumos numéricos: Medidas de posição e dispersão.
+- Análises bivariadas: Explorando associações entre variáveis.
+
+**Encontro 3**
+
+- Outros tipos de gráfico.
+- Análise exploratória na prática: revisando conceitos e extraindo informações de um conjunto de dados real com R.
+- Considerações finais.
+
+---
+
+## Referências
+
+### Referências básicas
+
+ - Bussab, WO; Morettin, PA. Estatística Básica. São Paulo: Editora Saraiva, 2017 (9ª Edição).
+
+ - Magalhães, MN; Lima, ACP. Noções de Probabilidade e Estatística. São Paulo: EDUSP, 2015 (7ª edição).
+
+### Material de apoio
+
+Playlist de Estatística Básica do Departamento de Estatística da UFPR: http://www.leg.ufpr.br/~paulojus/estbas/.
+
+---
+
+# 
+
+<center>
+
+<table><tr>
+
+<td> <img src="img/ufpr-transparent-600px.png" alt="Drawing" style="width: 200px;"/> </td>
+
+<td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </td>
+
+<td> <img src="img/compolitica.jpeg" alt="Drawing" style="width: 140px;"/> </td>
+
+
+</center>
+
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

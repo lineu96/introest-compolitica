@@ -1,0 +1,501 @@
+---
+title: |
+ |
+ | \textbf{Fundamentos de Análise Exploratória de Dados}
+ | Conceitos e Aplicações
+
+subtitle:  |
+ |
+ | Encontro 1
+ | Exercícios
+author: Prof. Me. Lineu Alberto Cavazani de Freitas \vspace{-0.5cm}
+date: ""
+#institute: |
+# |
+# | Departamento de Estatística
+# | Laboratório de Estatística e Geoinformação
+graphics: yes
+classoption: [serif, professionalfont, usenames, dvipsnames, aspectratio = 169]
+# bibliography: references.bib
+# csl: ../config/ABNT_UFPR_2011-Mendeley.csl
+output:
+  beamer_presentation:
+    fig_caption: yes
+    fig_crop: no
+    highlight: haddock
+    includes:
+      # NOTE: background, color theme and logos are defined in `preamble-rmd-settings.tex`.
+      in_header: [config/preamble-settings-rmd.tex, config/preamble-global.tex, config/preamble-chunk-rmd.tex, config/preamble-commands.tex]
+    keep_tex: yes
+# http://rmarkdown.rstudio.com/beamer_presentation_format.html
+---
+
+```{r, include = FALSE}
+source("./config/setup.R")
+```
+
+# Exercício 1
+
+## Exercício 1
+
+Classifique cada uma das variáveis a seguir em quantitativa contínua (QC), quantitativa discreta (QD), qualitativa nominal (QN) ou qualitativa ordinal (QO).
+
+\vspace{0.3cm}
+
+\beginAHalfColumn
+
+ 1. Estado civil.
+ 2. Peso. 
+ 3. Número de filhos.
+ 4. Número da camisa de um jogador.
+ 5. Classe social. 
+ 6. Idade. 
+ 7. Classificação como doente ou não doente. 
+ 8. Número de animais de estimação.
+
+\endColumns
+\beginAHalfColumn
+
+ 9. Tempo.
+ 10. Número de consultas médicas.
+ 11. Severidade de uma lesão. 
+ 12. Gols marcados em um jogo.
+ 13. Grau de escolaridade.
+ 14. Altura. 
+ 15. Cor da pele.
+ 16. Grau de proficiência em língua inglesa.
+
+\endColumns
+
+## Exercício 1
+
+Classifique cada uma das variáveis a seguir em quantitativa contínua (QC), quantitativa discreta (QD), qualitativa nominal (QN) ou qualitativa ordinal (QO).
+
+\vspace{0.3cm}
+
+\beginAHalfColumn
+
+ 1. Estado civil. (**QN**)
+ 2. Peso. (**QC**) 
+ 3. Número de filhos. (**QD**)
+ 4. Número da camisa de um jogador. (**QN**)
+ 5. Classe social. (**QO**) 
+ 6. Idade. (**QC**) 
+ 7. Classificação como doente ou não doente. (**QN**) 
+ 8. Número de animais de estimação. (**QD**)
+
+\endColumns
+\beginAHalfColumn
+
+ 9. Tempo. (**QC**)
+ 10. Número de consultas médicas. (**QD**)
+ 11. Severidade de uma lesão. (**QO**) 
+ 12. Gols marcados em um jogo. (**QD**)
+ 13. Grau de escolaridade. (**QO**)
+ 14. Altura. (**QC**) 
+ 15. Cor da pele. (**QN**)
+ 16. Grau de proficiência em língua inglesa. (**QO**)
+
+\endColumns
+
+# Exercício 2
+
+## Exercício 2
+
+Classifique os estudos descritos na sequência como experimentais (EE) ou observacionais (EO).
+
+1. Automóveis que circulam por uma rodovia foram selecionados inspecionados com o objetivo de analisar a emissão de poluentes.
+
+2. Dois tipos de pintura foram aplicados a móveis de madeira com o objetivo de avaliar a aderência da tinta.
+
+3. As capacidades respiratórias de funcionários fumantes e não fumantes foram verificadas numa pesquisa.
+
+4. Numa plantação, três tipos de fertilizantes foram administrados a diferentes canteiros, e as consequentes produções foram registradas.
+
+5. Automóveis de certo modelo foram analisados quanto ao desempenho registrado quando abastecidos com álcool e gasolina.
+
+6. As preferências de consumidores de certo produto foram registradas quando apresentados a dois tipos de embalagens.
+
+## Exercício 2
+
+Classifique os estudos descritos na sequência como experimentais (EE) ou observacionais (EO).
+
+1. Automóveis que circulam por uma rodovia foram selecionados inspecionados com o objetivo de analisar a emissão de poluentes. (**EO**)
+
+2. Dois tipos de pintura foram aplicados a móveis de madeira com o objetivo de avaliar a aderência da tinta. (**EE**)
+
+3. As capacidades respiratórias de funcionários fumantes e não fumantes foram verificadas numa pesquisa. (**EO**)
+
+4. Numa plantação, três tipos de fertilizantes foram administrados a diferentes canteiros, e as consequentes produções foram registradas. (**EE**)
+
+5. Automóveis de certo modelo foram analisados quanto ao desempenho registrado quando abastecidos com álcool e gasolina. (**EE**)
+
+6. As preferências de consumidores de certo produto foram registradas quando apresentados a dois tipos de embalagens. (**EO**)
+
+# Exercício 3
+
+## Exercício 3
+
+Uma pesquisa tinha como objetivo verificar qual o meio de transporte mais comum entre os alunos de uma turma. As respostas foram:
+
+
+```{r, echo=FALSE}
+set.seed(1)
+
+nominal <- sample(c(
+  "A pé",
+  "Carro",
+  "Ônibus",
+  "Moto",
+  "Bicicleta",
+  "Outro"
+), 30,
+replace = T,
+prob = c(0.1, 0.3, 0.3, 0.2, 0.05, 0.05))
+
+df <- data.frame(nominal[1:10],
+                 nominal[11:20],
+                 nominal[21:30])
+
+names(df) <- c('','','')
+
+knitr::kable(t(df))
+
+```
+
+Construa uma tabela usando frequências absolutas e relativas (ou percentuais). Usando esta tabela esboce uma visualização adequada.
+
+## Exercício 3
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(nominal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+
+tabela_final$nominal <- as.vector(tabela_final$nominal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:6])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:6])
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=5, out.width="90%"}
+barplot(tabela, col = 0)
+```
+
+\endColumns
+
+## Exercício 3
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(nominal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+
+tabela_final <- dplyr::arrange(tabela_final, desc(Freq))
+
+tabela_final$nominal <- as.vector(tabela_final$nominal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:6])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:6])
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=5, out.width="90%"}
+barplot(sort(tabela, decreasing = T), col = 0)
+```
+
+\endColumns
+
+## Exercício 3
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(nominal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+
+tabela_final <- dplyr::arrange(tabela_final, desc(Freq))
+
+tabela_final$nominal <- as.vector(tabela_final$nominal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:6])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:6])
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=7, out.width="90%"}
+barplot(sort(tabela, decreasing = F), col = 0, horiz=T, las=1)
+```
+
+\endColumns
+
+# Exercício 4
+
+## Exercício 4
+
+Diversas pesquisas de opinião fazem uso de um recurso chamado escala Likert. A ideia é que afirmativas são apresentadas e o respondente assinala o seu grau de concordância com cada afirmativa. Suponha que uma pesquisa de opinião sobre a qualidade dos restaurantes universitários está sendo conduzida e uma das afirmativas é "os produtos utilizados são de alta qualidade". Um conjunto de respondentes tinha a possibilidade de assinalar um de cinco pontos: discordo totalmente (DT); discordo (D); indiferente (I); concordo (C) ou concordo totalmente (CT).
+
+Considere o seguinte vetor de respostas:
+
+```{r, echo=FALSE}
+set.seed(2)
+
+ordinal <- sample(factor(c("DT", "D", 
+                           "I", "C", "CT"),
+                         ordered = T,
+                         levels = c("DT", "D", 
+                                    "I", "C", "CT")), 30,
+                  replace = T,
+                  prob = c(0.1, 0.1, 0.35, 0.35, 0.1))
+
+
+df <- data.frame(ordinal[1:15],
+                 ordinal[16:30])
+
+names(df) <- c('','')
+
+knitr::kable(t(df))
+
+```
+
+
+Construa uma tabela usando frequências absolutas, relativas (ou percentuais) e acumuladas. Usando esta tabela esboce uma visualização adequada.
+
+## Exercício 4
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(ordinal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+tabela_final$Freq_ac <- round(as.vector(cumsum(tabela)), 3)
+tabela_final$Freq_r_ac <- round(as.vector(cumsum(prop.table(tabela))), 3)
+
+tabela_final$ordinal <- as.vector(tabela_final$ordinal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:5])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:5])
+
+tabela_final[6,4] <- ""
+tabela_final[6,5] <- ""
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$",
+                         "$F_{a}$", "$F_{r}$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=5, out.width="90%"}
+barplot(tabela, col = 0)
+```
+
+\endColumns
+
+## Exercício 4
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(ordinal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+tabela_final$Freq_ac <- round(as.vector(cumsum(tabela)), 3)
+tabela_final$Freq_r_ac <- round(as.vector(cumsum(prop.table(tabela))), 3)
+
+tabela_final$ordinal <- as.vector(tabela_final$ordinal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:5])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:5])
+
+tabela_final[6,4] <- ""
+tabela_final[6,5] <- ""
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$",
+                         "$F_{a}$", "$F_{r}$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=5, out.width="90%"}
+barplot(tabela, col = 0, horiz=T, las=1)
+```
+
+\endColumns
+
+# Exercício 5
+
+## Exercício 5
+
+Uma empresa conduziu um estudo para avaliar a segurança de seus funcionários. Um dos itens avaliados foi o número de acidentes sofrido por cada funcionário em situações de trabalho. Os dados obtidos foram:
+
+```{r, echo=FALSE}
+set.seed(1)
+
+discreta <- sample(factor(0:10,
+                          ordered = T,
+                          levels = 0:10), 30,
+                   replace = T,
+                   prob = c(
+                     0.5,0.2,0.1,
+                     0.03, 0.03,
+                     0.03,0.03,
+                     0.03,0.03,
+                     0.01, 0.01))
+
+df <- data.frame(discreta[1:10],
+                 discreta[11:20],
+                 discreta[21:30])
+
+names(df) <- c('','','')
+
+knitr::kable(t(df))
+
+```
+
+Construa uma tabela usando frequências absolutas, relativas (ou percentuais) e acumuladas. Usando esta tabela esboce uma visualização adequada.
+
+## Exercício 5
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(discreta)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+tabela_final$Freq_ac <- round(as.vector(cumsum(tabela)), 3)
+tabela_final$Freq_r_ac <- round(as.vector(cumsum(prop.table(tabela))), 3)
+
+tabela_final$discreta <- as.vector(tabela_final$discreta)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:11])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:11])
+
+tabela_final[12,4] <- ""
+tabela_final[12,5] <- ""
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$",
+                         "$F_{a}$", "$F_{r}$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=6.5, out.width="90%"}
+barplot(tabela, col = 0)
+```
+
+\endColumns
+
+# Exercício 6
+
+## Exercício 6
+
+Existe interesse em estudar a altura de indivíduos de determinada população. Para isso, uma amostra foi tomada e as alturas observadas (em cm) foram:
+
+```{r, echo=FALSE}
+set.seed(2)
+
+quantitativa <- round(rnorm(30, 170, 10))
+
+df <- data.frame(quantitativa[1:10],
+                 quantitativa[11:20],
+                 quantitativa[21:30])
+
+names(df) <- c('','','')
+
+knitr::kable(t(df))
+
+```
+
+Construa uma tabela usando com os dados agrupados em faixas de valores partindo de 140 até 200 de 10 em 10. Use frequências absolutas, relativas (ou percentuais) e acumuladas. Usando esta tabela esboce uma visualização adequada.
+
+## Exercício 6
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+breaks <- seq(140,200,10)
+
+classes <- cut(quantitativa, 
+               breaks = breaks, 
+               include.lowest = TRUE,
+               right = FALSE)
+
+tabela <- table(classes)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+tabela_final$Freq_ac <- round(as.vector(cumsum(tabela)), 3)
+tabela_final$Freq_r_ac <- round(as.vector(cumsum(prop.table(tabela))), 3)
+
+tabela_final$classes <- as.vector(tabela_final$classes)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:6])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:6])
+
+tabela_final[7,4] <- ""
+tabela_final[7,5] <- ""
+
+names(tabela_final) <- c("Faixas", "$f_a$", "$f_r$",
+                         "$F_{a}$", "$F_{r}$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=7, fig.height=6.5, out.width="90%"}
+vec <- tabela_final$`$f_a$`[1:6]
+names(vec) <- tabela_final$Faixas[1:6]
+barplot(vec, 
+        space = 0,
+        col = 0,
+        xlab = 'Altura',
+        ylab = 'Frequência',
+        main = '')
+
+```
+
+\endColumns
+
+

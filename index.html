@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Introdução à Estatística</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Análise Exploratória de Dados</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-person-chalkboard"></span>
+     
+    Aulas
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="divider"></li>
+    <li class="dropdown-header">Encontro 1</li>
+    <li>
+      <a href="encontros/encontro1.pdf">
+        <span class="fa fa-arrow-right"></span>
+         
+        Aula
+      </a>
+    </li>
+    <li>
+      <a href="praticas/exercicios-encontro1-solucao.pdf">
+        <span class="fa fa-arrow-right"></span>
+         
+        Exercícios
+      </a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Encontro 2</li>
+    <li>
+      <a href="encontros/encontro2.pdf">
+        <span class="fa fa-arrow-right"></span>
+         
+        Aula
+      </a>
+    </li>
+    <li>
+      <a href="praticas/exercicios-encontro2-solucao.pdf">
+        <span class="fa fa-arrow-right"></span>
+         
+        Exercícios
+      </a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Encontro 3</li>
+    <li>
+      <a href="https://www.data-to-viz.com/">
+        <span class="fa fa-arrow-right"></span>
+         
+        From Data to Viz
+      </a>
+    </li>
+    <li class="dropdown-header">Script</li>
+    <li class="dropdown-header">Dados</li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-pen-to-square"></span>
+     
+    Outros materiais
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="encontros/intro-R.pdf">
+        <span class="fa fa-arrow-right"></span>
+         
+        Introdução ao R
+      </a>
+    </li>
+    <li>
+      <a href="https://lineu96.github.io/CE3012024/">
+        <span class="fa fa-arrow-right"></span>
+         
+        Um curso de Estatística Básica
+      </a>
+    </li>
+    <li>
+      <a href="http://leg.ufpr.br/~ara/teach/viz2025.html">
+        <span class="fa fa-arrow-right"></span>
+         
+        Introdução à Visualização de Dados Aplicada
+      </a>
+    </li>
+    <li>
+      <a href="https://r-graph-gallery.com/">
+        <span class="fa fa-arrow-right"></span>
+         
+        The R Graph Gallery
+      </a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://lineu96.github.io/">
+    <span class="fa fa-user-tie"></span>
+     
+    Lineu Alberto
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Introdução à Estatística</h1>
+<h3 class="subtitle"><div class="line-block">Fundamentos de Análise
+Exploratória de Dados<br />
+Conceitos e Aplicações<br />
+</div></h3>
+<h4 class="author"><div class="line-block"><br />
+Prof. Me. Lineu Alberto Cavazani de Freitas </div></h4>
+
+</div>
+
+
+<hr />
+<div id="detalhes" class="section level2">
+<h2>Detalhes</h2>
+<p><strong>Curso</strong>: <a
+href="https://www.sympla.com.br/evento-online/escola-de-verao-inct-dd-compolitica-2026/3257554?referrer=inctdd.org&amp;referrer=inctdd.org">Introdução
+à Estatística | Fundamentos de Análise Exploratória de Dados | Conceitos
+e Aplicações</a></p>
+<p><strong>Público Alvo</strong>: Pesquisadores em Comunicação e
+Política com interesse em conhecer ou aprimorar os conhecimentos em
+técnicas de Análise Exploratória de Dados.</p>
+<p><strong>Desejável</strong>: R básico.</p>
+<ul>
+<li>No último encontro do curso será conduzida uma Análise Exploratória
+de Dados de um conjunto de dados real utilizando a linguagem R e a IDE
+RStudio.</li>
+<li>O não conhecimento da linguagem não inviabiliza a participação no
+curso.</li>
+<li>O R será usado como ferramenta de reforço de aprendizado, porém não
+trata-se de um curso de R!</li>
+</ul>
+<p><strong>Professor responsável</strong>: <strong><a
+href="https://lineu96.github.io/">Lineu Alberto Cavazani de
+Freitas</a></strong>.</p>
+<p><strong>E-mail para contato</strong>: <a
+href="mailto:lineuacf@gmail.com"
+class="email">lineuacf@gmail.com</a></p>
+<p><strong>Carga Horária</strong>: 9 horas.</p>
+<p><strong>Formato</strong>: Curso remoto. Os inscritos receberão os
+links das salas em seus e-mails.</p>
+<p><strong>Dias e horários</strong>: 26/01/2025, 28/01/2025 e 30/01/2025
+das 18h até 21h.</p>
+<hr />
+</div>
+<div id="programa-e-objetivos" class="section level2">
+<h2>Programa e objetivos</h2>
+<p>O objetivo do curso é fornecer uma visão geral de Estatística e
+capacitar os participantes em conceitos básicos de Análise Exploratória
+de Dados que permitam a interpretação crítica de resultados bem como a
+execução de procedimentos e análises exploratórias básicas dos tipos de
+variáveis mais comuns por meio de tabelas, gráficos e medidas
+resumo.</p>
+<p>O curso compreende três encontros:</p>
+<p><strong>Encontro 1</strong></p>
+<ul>
+<li>Apresentação do curso.</li>
+<li>Introdução: Ideias iniciais, conceitos e motivações sobre
+Estatística.</li>
+<li>Dados e amostragem: Conjunto de dados, tipos de variáveis, fontes de
+dados, amostragem probabilística e não probabilística.</li>
+<li>Gráficos e tabelas para variáveis qualitativas e quantitativas.</li>
+</ul>
+<p><strong>Encontro 2</strong></p>
+<ul>
+<li>Resumos numéricos: Medidas de posição e dispersão.</li>
+<li>Análises bivariadas: Explorando associações entre variáveis.</li>
+</ul>
+<p><strong>Encontro 3</strong></p>
+<ul>
+<li>Outros tipos de gráfico.</li>
+<li>Análise exploratória na prática: revisando conceitos e extraindo
+informações de um conjunto de dados real com R.</li>
+<li>Considerações finais.</li>
+</ul>
+<hr />
+</div>
+<div id="referências" class="section level2">
+<h2>Referências</h2>
+<div id="referências-básicas" class="section level3">
+<h3>Referências básicas</h3>
+<ul>
+<li><p>Bussab, WO; Morettin, PA. Estatística Básica. São Paulo: Editora
+Saraiva, 2017 (9ª Edição).</p></li>
+<li><p>Magalhães, MN; Lima, ACP. Noções de Probabilidade e Estatística.
+São Paulo: EDUSP, 2015 (7ª edição).</p></li>
+</ul>
+</div>
+<div id="material-de-apoio" class="section level3">
+<h3>Material de apoio</h3>
+<p>Playlist de Estatística Básica do Departamento de Estatística da
+UFPR: <a href="http://www.leg.ufpr.br/~paulojus/estbas/"
+class="uri">http://www.leg.ufpr.br/~paulojus/estbas/</a>.</p>
+<hr />
+</div>
+</div>
+<div id="section" class="section level1">
+<h1></h1>
+<center>
+<table>
+<tr>
+<td>
+<img src="img/ufpr-transparent-600px.png" alt="Drawing" style="width: 200px;"/>
+</td>
+<td>
+           
+</td>
+<td>
+<img src="img/compolitica.jpeg" alt="Drawing" style="width: 140px;"/>
+</td>
+</center>
+<div class="tocify-extend-page" data-unique="tocify-extend-page"
+style="height: 0;">
+
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

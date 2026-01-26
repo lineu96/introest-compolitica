@@ -1,0 +1,39 @@
+
+---
+
+Um apanhado do curso
+
+Chegamos ao fim do nosso curso de Fundamentos de Análise Exploratória de Dados. Ao longo deste curso, você desenvolveu uma compreensão fundamental de como examinar, descrever e resumir conjuntos de dados brutos para revelar padrões e extrair informações.
+
+A Análise Exploratória de Dados (AED) não é apenas um conjunto de técnicas; é um processo de investigação. É a primeira e mais importante etapa em qualquer projeto que envolva análise de dados.
+
+Ao longo do curso passamos por diversos temas:
+
+Começamos classificando os dados em qualitativos e quantitativos. Aprendemos a organizar dados brutos em tabelas de frequência e a visualizá-los por meio de gráficos de barras, histogramas, gráficos de densidade e boxplots. Essas ferramentas iniciais nos permitem entender a distribuição de cada variável individualmente.
+
+Aprofundamos o estudo das medidas resumo, que nos permitem descrever numericamente os dados: Medidas de Posição Central para identificar o "centro" dos dados, Medidas de Posição Relativa para entender a posição de valores específicos e Medidas de Dispersão para medir o espalhamento dos dados.
+
+A apresentação das ideias de análise bivariada nos permitiu entender ferramentas para explorar a associação entre pares de variáveis. Para variáveis qualitativas, utilizamos tabelas de contingência e gráficos de barras empilhadas/agrupadas, além da estatística Qui-quadrado. Para variáveis quantitativas, focamos no diagrama de dispersão e no coeficiente de correlação, sempre lembrando que correlação não implica em causalidade. Para a combinação quantitativa x qualitativa, usamos medidas resumo e gráficos para cada um dos diferentes grupos.
+
+O último encontro foi dedicado à aplicação prática de todos esses conceitos utilizando a linguagem R. O foco foi conduzir uma análise exploratória de dados usando um conjunto de dados real usando o R como ferramenta de aprendizado. Além disso exploramos também recursos externos, como o data-to-viz.com, uma boa ferramenta para escolher a visualização correta para cada tipo de dado em contextos além daqueles apresentados no curso.
+
+---
+
+Considerações Finais e Próximos Passos
+
+A Análise Exploratória de Dados é uma habilidade fundamental na era dos dados e acessível a diferentes públicos graças ao desenvolvimento computacional. Algumas considerações:
+
+- Lembre-se que uma análise exploratória robusta também é sua primeira linha de defesa contra dados de baixa qualidade. Durante a AED, você identificará falhas, valores ausentes e inconsistências que, se não tratadas, poderiam comprometer qualquer análise futura.
+
+- É muito importante entender a diferença da análise que você faz para si mesmo daquela que é feita para comunicar com o público. A análise para você é um processo de investigação pessoal, frequentemente desordenado, focado em descobrir padrões e avaliar hipóteses de interesse. A análise para os outros é focada na comunicação, devemos selecionar os insights mais relevantes e apresentá-los de forma clara e objetiva. Muitas vezes não apresentamos nem metade daquilo que exploramos o que pode gerar um sentimento de frustração por sentir que o público não está vendo todo o trabalho realizado. A verdade é que o público não está interessado em saber o quanto você dedicou naquela análise, eles querem apenas as informações relevantes para tirar conclusões e precisamos saber lidar com isso.
+
+- Como analista, você pode se tornar excessivamente familiarizado com os dados. Isso pode levar a um viés de confirmação, fazendo com que você enxergue apenas o que espera encontrar ou, pior, falhe em identificar pontos que para um observador externo não seria difícil. Mantenha sempre um olhar crítico, objetivo e conte com seus pares; uma segunda opinião de olhos descansados é sempre bem vinda
+
+- A Análise Exploratória de Dados é a fundação, não o destino final. O trabalho que realizamos com visualização e medidas resumo serve como ponto de partida para análises mais sofisticadas como relatórios (apresentação estática dos dados combinando texto com ferramentas de análise exploratória), dashboards (paineis interativos que permitem realizar filtros e explorar possibilidades de acordo com o interesse do usuário) e métodos estatísticos mais avançados (testes de hipóteses, modelos de regressão, modelos de aprendizado de máquina).
+
+- Ao explorar os dados, você não apenas entende o presente, mas prepara o caminho para o futuro. A AED é o alicerce da modelagem. A compreensão profunda das variáveis e de suas relações, adquirida durante a exploração, é o que permite a construção de modelos estatísticos e de machine learning mais precisos e confiáveis.
+
+- O objetivo desse curso foi apresentar os fundamentos para analisar e interpretar conjuntos de dados de maneira eficaz. A prática constante é o próximo passo para dominar a Análise Exploratória de Dados e neste contexto, ferramentas especializadas são essenciais. R e Python hoje são as linguagens mais usadas e tem ferramentas para todas as etapas do processo de análise de dados: importação, tratamento, resumo, visualização, modelagem e comunicação.
+
+---
+

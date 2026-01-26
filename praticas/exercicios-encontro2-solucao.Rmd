@@ -1,0 +1,560 @@
+---
+title: |
+ |
+ | \textbf{Fundamentos de Análise Exploratória de Dados}
+ | Conceitos e Aplicações
+
+subtitle:  |
+ |
+ | Encontro 2
+ | Exercícios
+author: Prof. Me. Lineu Alberto Cavazani de Freitas \vspace{-0.5cm}
+date: ""
+#institute: |
+# |
+# | Departamento de Estatística
+# | Laboratório de Estatística e Geoinformação
+graphics: yes
+classoption: [serif, professionalfont, usenames, dvipsnames, aspectratio = 169]
+# bibliography: references.bib
+# csl: ../config/ABNT_UFPR_2011-Mendeley.csl
+output:
+  beamer_presentation:
+    fig_caption: yes
+    fig_crop: no
+    highlight: haddock
+    includes:
+      # NOTE: background, color theme and logos are defined in `preamble-rmd-settings.tex`.
+      in_header: [config/preamble-settings-rmd.tex, config/preamble-global.tex, config/preamble-chunk-rmd.tex, config/preamble-commands.tex]
+    keep_tex: yes
+# http://rmarkdown.rstudio.com/beamer_presentation_format.html
+---
+
+```{r, include = FALSE}
+source("./config/setup.R")
+```
+
+```{r, include = FALSE}
+source("./config/setup.R")
+```
+
+# Exercício 1
+
+## Exercício 1
+
+O Índice de Massa Corporal (IMC) é um cálculo que faz uso do peso e da altura de um indivíduo que permite avaliar se este indivíduo está ou não com o peso "ideal". Para fazer o cálculo, basta dividir o peso pela altura ao quadrado. Uma escola tinha como objetivo avaliar como o IMC dos alunos de uma turma se comportava. Os dados estão na tabela:
+
+```{r, echo=FALSE}
+set.seed(1)
+
+imc <- round(rnorm(15, 22, 5), 1)
+
+imc[15] <- 35
+
+df <- data.frame(imc[1:5],
+                 imc[6:10],
+                 imc[11:15])
+
+names(df) <- c('','','')
+
+knitr::kable(t(df))
+
+```
+
+ - Obtenha média, mediana, mínimo, máximo, quartis, amplitude interquartílica e esboce o boxplot para os dados fornecidos.
+
+ - Obtenha amplitude, desvio absoluto médio com relação à média e mediana, variância, desvio padrão, coeficiente de variação e z-escore.
+
+## Exercício 1
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+media <- round(mean(imc),2)
+
+#x_freq <- as.data.frame(table(imc))
+#moda <- subset(x_freq, Freq == max(x_freq$Freq))$imc
+
+mediana <- median(imc)
+
+minimo <- min(imc)
+
+maximo <- max(imc)
+
+q1 <- fivenum(imc)[2]
+q2 <- fivenum(imc)[3]
+q3 <- fivenum(imc)[4]
+
+aiq <- q3-q1
+
+resp <- data.frame(media, 
+                   #moda, 
+                   mediana, 
+                   minimo, maximo, 
+                   q1, q2, q3, aiq)
+
+names(resp) <- c("Média", 
+                 #"Moda", 
+                 "Mediana",
+                 "Mínimo", "Máximo", "1º Quartil",
+                 "2º Quartil", "3º Quartil",
+                 "AIQ")
+
+knitr::kable(t(resp))
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=6, fig.height=7.5, out.width="90%"}
+boxplot(imc, yaxt = "n", col = 0)
+
+axis(2, 
+     at=c(
+       #moda,
+       mediana, 
+          minimo, maximo, 
+          q1, q2, q3),
+     labels = T)
+```
+
+\endColumns
+
+## Exercício 1
+
+\small
+```{r, echo=FALSE}
+medidas <- data.frame(i = 1:15,
+                      imc = sort(imc),
+                      desv_medio = abs(round(sort(imc)-mean(imc), 2)),
+                      desv_mediano = abs(round(sort(imc)-median(imc), 2)),
+                      desv_medio_quad = round((sort(imc)-mean(imc))^2, 2),
+                      z = round((imc-mean(imc))/sd(imc), 4))
+
+
+names(medidas) <- c("i", "IMC", 
+                    "Desv. abs. média", 
+                    "Desv. abs. mediana", 
+                    "Desv. quadrático",
+                    "z-escore")
+
+knitr::kable(medidas)
+```
+
+## Exercício 1
+
+```{r, echo=FALSE}
+# amplitude
+amp <- diff(range(imc))
+
+# desvios absolutos médios
+d_medio <- round(mean(abs(imc - mean(imc))), 2)
+
+# desvios absolutos medianos
+d_mediano <- round(mean(abs(imc - median(imc))), 2)
+
+# variância
+var <- round(sum((imc - mean(imc))^2)/14, 2)
+
+# desvio padrão
+dp <- round(sqrt(sum((imc - mean(imc))^2)/14), 2)
+
+# cv
+cv <- round((sd(imc)/mean(imc))* 100, 2)
+
+dispersao <- data.frame(amp,
+                        d_medio,
+                        d_mediano,
+                        var,
+                        dp,
+                        cv)
+
+names(dispersao) <- c("Amplitude",
+                      "Desvio absoluto médio (média)",
+                      "Desvio absoluto médio (mediana)",
+                      "Variância",
+                      "Desvio padrão",
+                      "Coeficiente de variação")
+
+knitr::kable(t(dispersao))
+```
+
+# Exercício 2
+
+## Exercício 2
+
+Uma pesquisa tinha como objetivo verificar qual o meio de transporte mais comum entre os alunos de uma turma. As respostas foram:
+
+```{r, echo=FALSE}
+set.seed(1)
+
+nominal <- sample(c(
+  "A pé",
+  "Carro",
+  "Ônibus",
+  "Moto",
+  "Bicicleta",
+  "Outro"
+), 30,
+replace = T,
+prob = c(0.1, 0.3, 0.3, 0.2, 0.05, 0.05))
+
+df <- data.frame(nominal[1:10],
+                 nominal[11:20],
+                 nominal[21:30])
+
+names(df) <- c('','','')
+
+knitr::kable(t(df))
+
+```
+
+Obtenha uma medida de variabilidade adequada.
+
+## Exercício 2
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(nominal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+
+tabela_final <- dplyr::arrange(tabela_final, desc(Freq))
+
+tabela_final$nominal <- as.vector(tabela_final$nominal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:5])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:5])
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$")
+
+knitr::kable(tabela_final)
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=5.8,  out.width="90%"}
+barplot(sort(tabela, decreasing = T), col = 0)
+```
+
+\endColumns
+
+## Exercício 2
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(nominal)
+tabela_final <- as.data.frame(tabela)
+tabela_final$Freq_r <- round(as.vector(prop.table(tabela)), 3)
+
+tabela_final <- dplyr::arrange(tabela_final, desc(Freq))
+
+tabela_final$nominal <- as.vector(tabela_final$nominal)
+tabela_final[nrow(tabela_final)+1,1] <- "Total"
+tabela_final[nrow(tabela_final),2] <- sum(tabela_final$Freq[1:5])
+tabela_final[nrow(tabela_final),3] <- sum(tabela_final$Freq_r[1:5])
+
+names(tabela_final) <- c("Respostas", "$f_a$", "$f_r$")
+
+knitr::kable(tabela_final)
+```
+
+```{r, echo=FALSE}
+shannon = data.frame(H = round(-(sum((tabela_final[-7,]$`$f_r$`)*(log(tabela_final[-7,]$`$f_r$`)))), 2))
+names(shannon) <- "H = "
+knitr::kable(t(shannon))
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE, fig.width=5.8, out.width="90%"}
+barplot(sort(tabela, decreasing = T), col = 0)
+```
+
+\endColumns
+
+# Exercício 3
+
+## Exercício 3
+
+Em um estudo, uma universidade selecionou uma amostra de 10 alunos pertencentes a 2 turmas. Destes alunos, registrou-se se tinha ou não feito um curso pré vestibular e qual a nota obtida nas provas de português e matemática. Os dados coletados estão na tabela abaixo.
+
+```{r, echo=FALSE}
+set.seed(3)
+
+turma = sample(c("A", "B"), 10, replace = T)
+curso = sample(c("Sim", "Não"), 10, replace = T)
+portugues = round(rnorm(10, 6, 3))
+matematica = round(rnorm(10, 6, 3)) 
+
+df <- data.frame(aluno = 1:10,
+                 turma,
+                 curso,
+                 portugues,
+                 matematica)
+
+names(df) <- c("Aluno", "Turma", "Curso", 
+               "Português", 
+               "Matemática")
+knitr::kable(df)
+
+```
+
+## Exercício 3
+
+ 1. Para turma e curso, obtenha tabelas de dupla entrada usando frequência absoluta e relativa (total, por linha e por coluna) e esboce gráficos adequados para representar as tabelas. 
+ 
+ 2. Obtenha uma medida de associação para turma e curso.
+
+ 3. Para as notas, obtenha o coeficiente de correlação de Pearson e o diagrama de dispersão.
+
+ 4. Obtenha medidas descritivas e box-plots das notas em função do curso e da turma.
+
+## 1 Tabela de dupla entrada com frequências absolutas
+
+\beginAThirdColumn
+
+```{r, echo=FALSE}
+tabela1 <- table(df$Turma, df$Curso)
+knitr::kable(tabela1)
+```
+
+\endColumns
+\beginTwoThirdsColumn
+
+```{r, echo=FALSE, fig.width= 8, fig.height=6}
+par(mfrow = c(1,2))
+barplot(tabela1, beside = T, legend = T)
+barplot(t(tabela1), beside = T, legend = T)
+```
+
+\endColumns
+
+## 1 Tabela de dupla entrada com frequências relativas (total geral)
+
+\beginAThirdColumn
+
+```{r, echo=FALSE}
+tabela1 <- prop.table(table(df$Turma, df$Curso))
+knitr::kable(tabela1)
+```
+
+\endColumns
+\beginTwoThirdsColumn
+
+```{r, echo=FALSE, fig.width= 8, fig.height=6}
+par(mfrow = c(1,2))
+barplot(tabela1, beside = T, legend = T)
+barplot(t(tabela1), beside = T, legend = T)
+```
+
+\endColumns
+
+## 1 Tabela de dupla entrada com frequências relativas (total linha)
+
+\beginAThirdColumn
+
+```{r, echo=FALSE}
+tabela2 <- prop.table(tabela1, margin = 1)
+knitr::kable(addmargins(round(tabela2,2)))
+```
+
+\endColumns
+\beginTwoThirdsColumn
+
+```{r, echo=FALSE, fig.width= 8, fig.height=6}
+barplot(t(tabela2), legend = T)
+```
+
+\endColumns
+
+## 1 Tabela de dupla entrada com frequências relativas (total coluna)
+
+\beginAThirdColumn
+
+```{r, echo=FALSE}
+tabela3 <- prop.table(tabela1, margin = 2)
+knitr::kable(addmargins(round(tabela3,2)))
+```
+
+\endColumns
+\beginTwoThirdsColumn
+
+```{r, echo=FALSE, fig.width= 8, fig.height=6}
+barplot(tabela3, legend = T)
+```
+
+\endColumns
+
+## 2 Qui-quadrado para associação
+
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+tabela <- table(df$Turma, df$Curso)
+
+tabela1 <- addmargins(tabela)
+
+colnames(tabela1)[ncol(tabela1)] <- "Total"
+row.names(tabela1)[nrow(tabela1)] <- "Total"
+
+knitr::kable(round(tabela1, 2), 
+             caption = "Valores observados.", 
+             align ="ccc" )
+
+tabela2 <- chisq.test(tabela)$expected
+
+tabela2 <- addmargins(tabela2)
+
+colnames(tabela2)[ncol(tabela2)] <- "Total"
+row.names(tabela2)[nrow(tabela2)] <- "Total"
+
+knitr::kable(round(tabela2, 2), 
+             caption = "Valores esperados.", 
+             align ="ccc" )
+```
+
+\endColumns
+\beginAHalfColumn
+
+```{r, echo=FALSE}
+
+knitr::kable(round((tabela - chisq.test(tabela)$expected)^2/chisq.test(tabela)$expected, 2), 
+             caption = "$\\frac{(o-e)^2}{e}$.", 
+             align ="ccc" )
+
+```
+
+$$Q = \sum_{i=1}^{r} \sum_{j=1}^{s} \frac{(o_{ij} - e_{ij})^2}{e_{ij}} \approx  0$$
+\endColumns
+
+## 3 Correlação
+
+\footnotesize
+```{r, echo=FALSE}
+tabela <- data.frame(pt = df$Português,
+           dpt = df$Português - mean(df$Português),
+           dpt2 = (df$Português - mean(df$Português))^2,
+           mt = df$Matemática,
+           dmt = df$Matemática - mean(df$Matemática),
+           dmt2 = (df$Matemática - mean(df$Matemática))^2)
+
+tabela$dptdmt <- tabela$dpt*tabela$dmt
+
+tabela2 <- tabela
+names(tabela2) <- c("PT", "$PT - \\overline{PT}$",
+                   "$(PT - \\overline{PT})^2$",
+                   "MT", "$MT - \\overline{MT}$",
+                   "$(MT - \\overline{MT})^2$",
+                   "$(PT - \\overline{PT}) \\times (MT - \\overline{MT})$")
+
+knitr::kable(tabela2, align = 'c')
+
+media_pt <- round(sum(tabela$pt/10), 2)
+media_mt <- round(sum(tabela$mt/10), 2)
+var_pt <- round(sum(tabela$dpt2/9), 2)
+var_mt <- round(sum(tabela$dmt2/9), 2)
+cov <- round(sum(tabela$dptdmt/9), 2)
+cor <- round(cov/sqrt(var_pt*var_mt), 2)
+```
+
+\footnotesize
+```{r, echo=FALSE}
+res <- data.frame(media_pt,
+           media_mt,
+           var_pt,
+           var_mt,
+           cov,
+           cor)
+
+names(res) <- c("$\\overline{PT} =$",
+                "$\\overline{MT} =$",
+                "$V(PT) =$",
+                "$V(MT) =$",
+                "$COV(PT,MT) =$",
+                "$COR(PT,MT) =$")
+
+knitr::kable(t(res), align = 'c')
+```
+
+## 3 Diagrama de dispersão
+
+```{r, echo=FALSE}
+plot(Português~Matemática, df, pch=19)
+```
+
+
+## 4 Medidas descritivas por turma e curso
+
+\beginAHalfColumn
+
+\small
+```{r, echo=FALSE, message=F}
+library(tidyverse)
+tabela <- df %>% 
+  group_by(Turma) %>% 
+  summarise(Média = round(mean(Português), 2),
+            Mediana = round(median(Português), 2),
+            `Desvio padrão` = round(sd(Português), 2))
+
+knitr::kable(tabela, 
+             align ="ccc",
+             caption = "Notas em português em função do turma.")
+
+tabela2 <- df %>% 
+  group_by(Turma) %>% 
+  summarise(Média = round(mean(Matemática), 2),
+            Mediana = round(median(Matemática), 2),
+            `Desvio padrão` = round(sd(Matemática), 2))
+
+knitr::kable(tabela2, 
+             align ="ccc",
+             caption = "Notas em matemática em função do turma."
+             )
+
+```
+
+\endColumns
+\beginAHalfColumn
+
+\small
+```{r, echo=FALSE, message=F}
+tabela3 <- df %>% 
+  group_by(Curso) %>% 
+  summarise(Média = round(mean(Português), 2),
+            Mediana = round(median(Português), 2),
+            `Desvio padrão` = round(sd(Português), 2))
+
+knitr::kable(tabela3, 
+             align ="ccc",
+             caption = "Notas em português em função do curso.")
+
+tabela4 <- df %>% 
+  group_by(Curso) %>% 
+  summarise(Média = round(mean(Matemática), 2),
+            Mediana = round(median(Matemática), 2),
+            `Desvio padrão` = round(sd(Matemática), 2))
+
+knitr::kable(tabela4, 
+             align ="ccc",
+             caption = "Notas em matemática em função do curso.")
+```
+
+\endColumns
+
+## 4 box-plots das notas em função de turma e curso
+
+```{r, echo=FALSE, fig.height=5, fig.width=8}
+par(mfrow = c(1,4))
+boxplot(df$Português~df$Turma, xlab = "Turma", ylab = "PT")
+boxplot(df$Português~df$Curso, xlab = "Curso", ylab = "PT")
+boxplot(df$Matemática~df$Turma, xlab = "Turma", ylab = "MT")
+boxplot(df$Matemática~df$Curso, xlab = "Curso", ylab = "MT")
+```
+

@@ -1,0 +1,408 @@
+---
+title: Fundamentos de Análise Exploratória de Dados
+subtitle:  | 
+ | Conceitos e Aplicações
+ | 
+author: |
+ |
+ | Prof. Me. Lineu Alberto Cavazani de Freitas \vspace{-0.5cm}
+date: ""
+output:
+  html_document:                    
+    #toc: true                       
+    #toc_depth: 3                    
+    #toc_float:                      
+    #  collapsed: true
+    #  smooth_scroll: true
+    #number_sections: true           
+    #theme: default
+    #spacelab
+    #default,cerulean,journal,flatly,readable,spacelab,
+    #united,cosmo,lumen,paper,sandstone,simplex,yeti
+    
+    highlight: textmate
+    #default, tango, pygments, kate, monochrome, espresso, zenburn, haddock, and textmate
+    #css: styles.css                
+    fig_width: 7                    
+    fig_height: 6                   
+    fig_caption: true               
+    fig_align: 'center'
+    #code_folding: hide              
+#    keep_md: true
+---
+
+
+---
+
+# Encontro 3
+
+## Análise exploratória na prática: revisando conceitos e extraindo informações de um conjunto de dados real com R.
+
+Os comandos a seguir mostram diversas técnicas vistas em aula para análise exploratória de variáveis qualitativas e quantitativas por meio de tabelas, gráficos e medidas.
+
+Os comandos são bastante básicos. Fica como tarefa aos interessados em linguagem R buscar maneiras de customizar os gráficos e tabelas e explorar ferramentas mais modernas para fazer a mesma análise proposta. Sugere-se fortemente a exploração de pacotes como dplyr e ggplot2.
+
+---
+
+## Dataset V-Dem
+
+Nesta aula, vamos trabalhar com dados reais extraídos da versão 14 do dataset V-Dem (Varieties of Democracy). O V-Dem é uma iniciativa de pesquisa global que coleta informações sobre a democracia em praticamente todos os países do mundo desde 1789.
+
+Nossa análise exploratória será focada em um recorte específico deste conjunto de dados, obtido diretamente do site do projeto V-Dem.
+
+### Recorte e Fonte dos Dados
+
+- Fonte: [Country-Year: V-Dem Full+Others version 14](https://www.v-dem.net/data/the-v-dem-dataset/country-year-v-dem-fullothers-v14/).
+
+- Recorte Temporal: Para garantir que nossa análise seja robusta e com poucos dados faltantes, trabalharemos com o período de 2000 a 2020.
+
+### Variáveis da Análise
+
+Variáveis Qualitativas (Categóricas):
+
+- `tipo_regime`: Classifica o tipo de regime político de um país, de acordo com o projeto "Regimes of the World". Níveis: Autocracia Fechada (código 0), Autocracia Eleitoral (código 1), Democracia Eleitoral (código 2), Democracia Liberal (código 3).
+
+- `regiao`: Agrupa os países em seis grandes regiões político-geográficas. Níveis: Europa Oriental e Ásia Central (código 1), América Latina e Caribe (código 2), Oriente Médio e Norte da África (código 3), África Subsaariana (código 4), Europa Ocidental e América do Norte (código 5), Ásia e Pacífico (código 6).
+
+Variáveis Quantitativas (Numéricas):
+
+- dem_eleitoral: O Índice de Democracia Eleitoral. Foca na qualidade de eleições, liberdade de imprensa e de associação. Sua escala vai de 0 (baixo) a 1 (alto).
+
+- `dem_liberal`: O Índice de Democracia Liberal. Avalia a proteção de direitos, Estado de Direito e liberdades civis. Sua escala vai de 0 (baixo) a 1 (alto).
+
+- `indice_polity`: O Índice Polity. Mede a democracia em uma escala de -10 (autocracia completa) a +10 (democracia completa). Códigos especiais que representam períodos de interrupção ou transição foram removidos.
+
+- `populacao`: O número de habitantes de um país.
+
+---
+
+```{r, eval=FALSE}
+#-----------------------------------------------------------------------
+rm(list = ls()) # Limpa o ambiente de trabalho do R, removendo todos os objetos anteriores.
+#-----------------------------------------------------------------------
+
+# --- Seção 1: Configuração Inicial e Carregamento dos Dados ---
+
+# Leitura dos dados tratados=
+dados_aula <- read.csv("https://raw.githubusercontent.com/lineu96/aed-compolitica/refs/heads/master/encontros/dados/dados_vdem_aula.csv")
+
+# Primeiras linhas
+head(dados_aula) # Exibe as primeiras 6 linhas do dataframe para uma inspeção inicial dos dados.
+
+#---
+
+# --- Seção 2: Análise Exploratória de Variáveis Qualitativas ---
+
+dados_aula$tipo_regime # Acessa a coluna 'tipo_regime' para visualização.
+
+## 2.1. Tabelas de Frequência para Variáveis Qualitativas
+
+### 2.1.1. Frequência Absoluta
+table(dados_aula$tipo_regime) # Gera uma tabela de frequência absoluta para a variável 'tipo_regime'.
+tabela_regime_freq_abs <- table(dados_aula$tipo_regime) # Armazena a tabela de frequência absoluta em 'tabela_regime_freq_abs'.
+tabela_regime_freq_abs # Exibe 'tabela_regime_freq_abs'.
+sum(tabela_regime_freq_abs) # Soma as frequências para verificar o total de observações.
+
+### 2.1.2. Frequência Relativa
+prop.table(tabela_regime_freq_abs) # Calcula as proporções (frequências relativas) a partir de 'tabela_regime_freq_abs'.
+tabela_regime_freq_rel <- prop.table(tabela_regime_freq_abs) # Armazena as frequências relativas em 'tabela_regime_freq_rel'.
+tabela_regime_freq_rel # Exibe 'tabela_regime_freq_rel'.
+sum(tabela_regime_freq_rel) # Soma as proporções para verificar se o total é 1 (ou próximo de 1).
+
+### 2.1.3. Frequência Percentual
+tabela_regime_freq_rel*100 # Converte as proporções de 'tabela_regime_freq_rel' em percentuais.
+tabela_regime_freq_perc <- tabela_regime_freq_rel*100 # Armazena os percentuais em 'tabela_regime_freq_perc'.
+tabela_regime_freq_perc # Exibe 'tabela_regime_freq_perc'.
+sum(tabela_regime_freq_perc) # Soma os percentuais para verificar se o total é 100.
+
+## 2.2. Gráficos para Variáveis Qualitativas
+
+### 2.2.1. Gráficos de Barras Simples (plot)
+plot(tabela_regime_freq_abs) # Gera um gráfico de barras simples usando a função 'plot' para frequências absolutas.
+plot(tabela_regime_freq_rel) # Gera um gráfico de barras simples para frequências relativas.
+plot(tabela_regime_freq_perc) # Gera um gráfico de barras simples para percentuais.
+
+### 2.2.2. Gráficos de Barras (barplot)
+barplot(tabela_regime_freq_abs) # Gera um gráfico de barras usando a função 'barplot' para frequências absolutas.
+barplot(tabela_regime_freq_rel) # Gera um gráfico de barras para frequências relativas.
+barplot(tabela_regime_freq_perc) # Gera um gráfico de barras para percentuais.
+
+### 2.2.3. Gráficos de Barras Horizontais
+par(mar=c(5, 10, 4, 2) + 0.1)
+barplot(tabela_regime_freq_abs, horiz=T, las=1) # Gera um gráfico de barras horizontais para frequências absolutas.
+barplot(tabela_regime_freq_rel, horiz=T, las=1) # Gera um gráfico de barras horizontais para frequências relativas.
+barplot(tabela_regime_freq_perc, horiz=T, las=1) # Gera um gráfico de barras horizontais para percentuais.
+par(mar=c(5, 4, 4, 2) + 0.1)
+
+### 2.2.4. Gráficos de Pizza
+pie(tabela_regime_freq_abs) # Gera um gráfico de pizza para frequências absolutas.
+pie(tabela_regime_freq_rel) # Gera um gráfico de pizza para frequências relativas.
+pie(tabela_regime_freq_perc) # Gera um gráfico de pizza para percentuais.
+
+### 2.2.5. Gráficos de Barras Empilhadas (Usando "Truque")
+# Cria uma tabela de frequência que, ao incluir uma coluna "vazia" (com um valor repetido para todas as observações),
+# força a função `barplot()` a criar um gráfico de barras empilhadas para uma única variável qualitativa.
+
+tabela_regime_dummy <- table(dados_aula$tipo_regime, rep('', nrow(dados_aula))) # 'rep('',nrow(dados_aula))' atua como uma segunda variável dummy.
+barplot(tabela_regime_dummy, legend.text = T) # Gera um gráfico de barras empilhadas, onde cada segmento representa uma categoria de estado civil.
+barplot(tabela_regime_dummy, horiz = T, legend.text = T) # Gera o mesmo gráfico, mas com barras horizontais empilhadas.
+
+tabela_regime_dummy_prop <- prop.table(tabela_regime_dummy) # Calcula as proporções para 'tabela_regime_dummy'.
+barplot(tabela_regime_dummy_prop, legend.text = T) # Gera gráfico de barras empilhadas com proporções.
+barplot(tabela_regime_dummy_prop, horiz = T, legend.text = T) # Gera gráfico de barras horizontais empilhadas com proporções.
+
+## 2.3. Organização de Tabelas de Frequência
+
+# Cria um dataframe para organizar as tabelas de frequência de forma mais apresentável.
+tabela_regime_final <- data.frame(tipo_regime = names(tabela_regime_freq_abs), # Nomes das categorias.
+                                  freq = as.vector(tabela_regime_freq_abs), # Frequências absolutas.
+                                  freq_r = as.vector(tabela_regime_freq_rel)) # Frequências relativas.
+
+tabela_regime_final # Exibe o dataframe inicial.
+tabela_regime_final[5,1] <- "TOTAL" # Adiciona a linha "TOTAL" na primeira coluna.
+tabela_regime_final[5,2] <- sum(tabela_regime_final$freq, na.rm = T) # Calcula e adiciona a soma das frequências absolutas.
+tabela_regime_final[5,3] <- sum(tabela_regime_final$freq_r, na.rm = T) # Calcula e adiciona a soma das frequências relativas.
+tabela_regime_final # Exibe o dataframe com a linha de total.
+
+names(tabela_regime_final) # Exibe os nomes atuais das colunas.
+names(tabela_regime_final) <- c("Tipo de Regime",
+                                "Freq. absoluta",
+                                "Freq. Relativa") # Renomeia as colunas para melhor legibilidade.
+tabela_regime_final # Exibe o dataframe final com os novos nomes.
+
+#---
+# --- Seção 3: Análise Exploratória de Variáveis Quantitativas ---
+
+dados_aula$dem_liberal_num # Acessa a coluna 'dem_liberal' para visualização.
+
+## 3.1. Tabelas de Frequência para Variáveis Quantitativas (com Classes)
+
+breaks <- seq(0, 1, 0.1) # Define os pontos de corte (quebras) para as classes de intervalo da democracia liberal.
+
+classes <- cut(dados_aula$dem_liberal_num, # Divide a variável 'dem_liberal' em intervalos (classes).
+               breaks = breaks, # Utiliza os pontos de corte definidos.
+               include.lowest = TRUE, # Define intervalos fechados à esquerda.
+               right = FALSE) # Define intervalos abertos à direita.
+
+table(classes) # Gera uma tabela de frequência para as classes de democracia liberal.
+tabela_dem_classes_abs <- table(classes) # Armazena a tabela de frequência em 'tabela_dem_classes_abs'.
+tabela_dem_classes_abs # Exibe 'tabela_dem_classes_abs'.
+sum(tabela_dem_classes_abs) # Soma as frequências para verificar o total de observações.
+
+prop.table(tabela_dem_classes_abs) # Calcula as proporções (frequências relativas) a partir de 'tabela_dem_classes_abs'.
+tabela_dem_classes_rel <- prop.table(tabela_dem_classes_abs) # Armazena as frequências relativas em 'tabela_dem_classes_rel'.
+tabela_dem_classes_rel # Exibe 'tabela_dem_classes_rel'.
+sum(tabela_dem_classes_rel) # Soma as proporções para verificar se o total é 1.
+
+tabela_dem_classes_rel*100 # Converte as proporções de 'tabela_dem_classes_rel' em percentuais.
+tabela_dem_classes_perc <- tabela_dem_classes_rel*100 # Armazena os percentuais em 'tabela_dem_classes_perc'.
+tabela_dem_classes_perc # Exibe 'tabela_dem_classes_perc'.
+sum(tabela_dem_classes_perc) # Soma os percentuais para verificar se o total é 100.
+
+## 3.2. Gráficos para Variáveis Quantitativas
+
+### 3.2.1. Histograma e Densidade
+tabela_dem_classes_abs # Exibe a tabela de frequência das classes de democracia liberal.
+
+barplot(tabela_dem_classes_abs, space = 0) # Gera um gráfico de barras (histograma) das classes sem espaço entre as barras.
+hist(dados_aula$dem_liberal_num, main = "Histograma de Democracia Liberal", breaks) # Gera um histograma padrão da variável.
+hist(dados_aula$dem_liberal_num, breaks, probability = T, main = "Histograma de Densidade") # Gera um histograma de densidade (com a área total igual a 1).
+
+densidade <- density(dados_aula$dem_liberal_num, na.rm = T) # Estima a função de densidade de probabilidade.
+plot(densidade, main = "Curva de Densidade") # Plota a curva de densidade estimada.
+
+hist(dados_aula$dem_liberal_num, breaks, probability = T, main = "Histograma com Curva de Densidade") # Gera novamente o histograma de densidade.
+lines(densidade) # Adiciona a curva de densidade ao histograma existente.
+
+### 3.2.2. Boxplot
+boxplot(dados_aula$dem_liberal_num, main = "Boxplot de Democracia Liberal") # Gera um boxplot para a variável.
+boxplot(dados_aula$dem_liberal_num, horizontal = T, main = "Boxplot Horizontal de Democracia Liberal") # Gera um boxplot horizontal.
+
+## 3.3. Organização de Tabelas de Frequência para Variáveis Quantitativas
+
+# Cria um dataframe para organizar as tabelas de frequência para variáveis quantitativas.
+tabela_dem_final <- data.frame(faixas= names(tabela_dem_classes_abs), # Nomes das faixas.
+                               freq = as.vector(tabela_dem_classes_abs), # Frequências absolutas das faixas.
+                               freq_r = as.vector(tabela_dem_classes_rel)) # Frequências relativas das faixas.
+
+tabela_dem_final # Exibe o dataframe inicial.
+tabela_dem_final[11,1] <- "TOTAL" # Adiciona a linha "TOTAL" na primeira coluna (considerando 10 faixas + 1 para o total).
+tabela_dem_final[11,2] <- sum(tabela_dem_final$freq, na.rm = T) # Calcula e adiciona a soma das frequências absolutas.
+tabela_dem_final[11,3] <- sum(tabela_dem_final$freq_r, na.rm = T) # Calcula e adiciona a soma das frequências relativas.
+tabela_dem_final # Exibe o dataframe com a linha de total.
+
+names(tabela_dem_final) # Exibe os nomes atuais das colunas.
+names(tabela_dem_final) <- c("Faixas",
+                             "Freq. absoluta",
+                             "Freq. Relativa") # Renomeia as colunas para melhor legibilidade.
+tabela_dem_final # Exibe o dataframe final com os novos nomes.
+
+#---
+# --- Seção 4: Medidas Resumo (Posição e Dispersão) ---
+
+dados_aula$dem_liberal_num # Acessa a coluna 'dem_liberal' para visualização.
+
+## 4.1. Medidas de Posição (Tendência Central e Separatrizes)
+
+### 4.1.1. Média Aritmética
+sum(dados_aula$dem_liberal_num, na.rm = T)/length(dados_aula$dem_liberal_num[!is.na(dados_aula$dem_liberal_num)]) # Calcula a média da democracia liberal manualmente.
+mean(dados_aula$dem_liberal_num, na.rm = T) # Calcula a média usando a função 'mean()'.
+
+### 4.1.2. Mediana
+median(dados_aula$dem_liberal_num, na.rm = T) # Calcula a mediana.
+
+### 4.1.3. Quartis e Decis
+quantile(dados_aula$dem_liberal_num, na.rm = T) # Calcula os quartis (0%, 25%, 50%, 75%, 100%).
+quantile(dados_aula$dem_liberal_num, seq(0,1,0.1), na.rm = T) # Calcula os decis de 0% a 100% (a cada 10%).
+quantile(dados_aula$dem_liberal_num, na.rm = T)[4] - quantile(dados_aula$dem_liberal_num, na.rm = T)[2] # Calcula a Amplitude Interquartil (Q3 - Q1).
+
+## 4.2. Medidas de Dispersão (Variabilidade)
+
+### 4.2.1. Amplitude Total
+min(dados_aula$dem_liberal_num, na.rm = T) # Encontra o valor mínimo.
+max(dados_aula$dem_liberal_num, na.rm = T) # Encontra o valor máximo.
+range(dados_aula$dem_liberal_num, na.rm = T) # Retorna o mínimo e o máximo.
+max(dados_aula$dem_liberal_num, na.rm = T) - min(dados_aula$dem_liberal_num, na.rm = T) # Calcula a amplitude.
+diff(range(dados_aula$dem_liberal_num, na.rm = T)) # Outra forma de calcular a amplitude total.
+
+### 4.2.2. Desvios Absolutos
+dados_aula$dem_liberal_num - mean(dados_aula$dem_liberal_num, na.rm = T) # Calcula os desvios em relação à média.
+dados_aula$dem_liberal_num - median(dados_aula$dem_liberal_num, na.rm = T) # Calcula os desvios em relação à mediana.
+
+da_media <- abs(dados_aula$dem_liberal_num - mean(dados_aula$dem_liberal_num, na.rm = T)) # Calcula o desvio absoluto em relação à média.
+da_mediana <- abs(dados_aula$dem_liberal_num - median(dados_aula$dem_liberal_num, na.rm = T)) # Calcula o desvio absoluto em relação à mediana.
+
+### 4.2.3. Desvio Médio Absoluto (DMA)
+mean(da_media, na.rm = T) # Calcula o Desvio Médio Absoluto (DMA) em relação à média.
+mean(da_mediana, na.rm = T) # Calcula o Desvio Médio Absoluto (DMA) em relação à mediana.
+
+### 4.2.4. Variância e Desvio Padrão
+var(dados_aula$dem_liberal_num, na.rm = T) # Calcula a variância.
+sqrt(var(dados_aula$dem_liberal_num, na.rm = T)) # Calcula o desvio padrão a partir da raiz quadrada.
+sd(dados_aula$dem_liberal_num, na.rm = T) # Calcula o desvio padrão usando a função 'sd()'.
+
+### 4.2.5. Coeficiente de Variação (CV)
+sd(dados_aula$dem_liberal_num, na.rm = T)/mean(dados_aula$dem_liberal_num, na.rm = T) # Calcula o coeficiente de variação.
+
+### 4.2.6. Escores Z (Padronização)
+(dados_aula$dem_liberal_num - mean(dados_aula$dem_liberal_num, na.rm = T))/sd(dados_aula$dem_liberal_num, na.rm = T) # Calcula os escores Z.
+escore <- scale(dados_aula$dem_liberal_num) # Função mais eficiente para calcular os escores Z.
+mean(escore, na.rm = T) # Calcula a média dos escores Z (deve ser aproximadamente 0).
+sd(escore, na.rm = T) # Calcula o desvio padrão dos escores Z (deve ser aproximadamente 1).
+
+### 4.2.7. Entropia de Shannon (Variabilidade para Qualitativas)
+dados_aula$regiao # Acessa a coluna 'regiao'.
+tabela_regiao_freq_abs <- table(dados_aula$regiao) # Tabela de frequência para 'regiao'.
+pi <- prop.table(tabela_regiao_freq_abs) # Proporções (frequências relativas).
+log_pi <- log(pi) # Logaritmo natural das proporções.
+h <- -(sum(pi*log_pi)) # Calcula a entropia de Shannon, uma medida de variabilidade para variáveis qualitativas.
+h # Exibe o valor da entropia.
+
+#---
+# --- Seção 5: Análises Bivariadas (Explorando Relações entre Variáveis) ---
+
+dados_aula$tipo_regime # Acessa a coluna 'tipo_regime'.
+dados_aula$regiao # Acessa a coluna 'regiao'.
+
+## 5.1. Tabelas de Contingência (Qualitativa vs. Qualitativa)
+
+table(dados_aula$tipo_regime, dados_aula$regiao) # Tabela de contingência entre 'tipo_regime' e 'regiao'.
+table(dados_aula$regiao, dados_aula$tipo_regime) # Tabela de contingência com as variáveis invertidas.
+
+### 5.1.1. Tabela de Frequência Absoluta
+tabela_contingencia_abs <- table(dados_aula$tipo_regime,
+                                 dados_aula$regiao) # Armazena a tabela de contingência.
+tabela_contingencia_abs # Exibe 'tabela_contingencia_abs'.
+sum(tabela_contingencia_abs) # Soma total das observações.
+
+addmargins(tabela_contingencia_abs) # Adiciona somas de linha e coluna (margens).
+t(tabela_contingencia_abs) # Transpõe a tabela (inverte linhas e colunas).
+
+### 5.1.2. Tabela de Proporção Geral
+prop.table(tabela_contingencia_abs) # Calcula as proporções em relação ao total geral da tabela.
+tabela_contingencia_rel <- prop.table(tabela_contingencia_abs) # Armazena as proporções gerais.
+tabela_contingencia_rel # Exibe 'tabela_contingencia_rel'.
+sum(tabela_contingencia_rel) # Soma as proporções para verificar o total (deve ser 1).
+addmargins(tabela_contingencia_rel) # Adiciona somas de linha e coluna às proporções gerais.
+t(tabela_contingencia_rel) # Transpõe a tabela de proporções gerais.
+
+### 5.1.3. Tabela de Proporção por Linha
+prop.table(tabela_contingencia_abs, margin = 1) # Calcula as proporções por linha (soma de cada linha = 1).
+tabela_contingencia_linha <- prop.table(tabela_contingencia_abs, margin = 1) # Armazena as proporções por linha.
+tabela_contingencia_linha # Exibe 'tabela_contingencia_linha'.
+addmargins(tabela_contingencia_linha) # Adiciona somas de linha e coluna (as somas das linhas serão 1).
+t(tabela_contingencia_linha) # Transpõe a tabela de proporções por linha.
+
+### 5.1.4. Tabela de Proporção por Coluna
+prop.table(tabela_contingencia_abs, margin = 2) # Calcula as proporções por coluna (soma de cada coluna = 1).
+tabela_contingencia_coluna <- prop.table(tabela_contingencia_abs, margin = 2) # Armazena as proporções por coluna.
+tabela_contingencia_coluna # Exibe 'tabela_contingencia_coluna'.
+addmargins(tabela_contingencia_coluna) # Adiciona somas de linha e coluna (as somas das colunas serão 1).
+
+## 5.2. Gráficos para Análises Bivariadas (Qualitativa vs. Qualitativa)
+
+tabela_contingencia_abs # Exibe a tabela de contingência original.
+
+barplot(tabela_contingencia_abs, beside = F, legend.text = T, main = "Gráfico de Barras Empilhadas") # Gráfico de barras empilhadas com legenda.
+barplot(t(tabela_contingencia_abs), beside = F, legend.text = T, main = "Gráfico de Barras Empilhadas (Transposto)") # Gráfico de barras empilhadas com a tabela transposta.
+
+barplot(tabela_contingencia_abs, beside = T, legend.text = T, main = "Gráfico de Barras Agrupadas") # Gráfico de barras agrupadas com legenda.
+barplot(t(tabela_contingencia_abs), beside = T, legend.text = T, main = "Gráfico de Barras Agrupadas (Transposto)") # Gráfico de barras agrupadas com a tabela transposta.
+
+barplot(t(tabela_contingencia_linha), legend.text = T, main = "Proporção por Linha") # Gráfico de barras para proporções por linha.
+barplot(tabela_contingencia_coluna, legend.text = T, main = "Proporção por Coluna") # Gráfico de barras para proporções por coluna.
+
+## 5.3. Correlação (Quantitativa vs. Quantitativa)
+
+cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, use = "complete.obs") # Calcula a correlação de Pearson entre 'dem_liberal' e 'dem_eleitoral' (padrão).
+cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, method = "pearson", use = "complete.obs") # Especifica o método de Pearson para correlação linear.
+cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, method = "spearman", use = "complete.obs") # Calcula a correlação de Spearman.
+cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, method = "kendall", use = "complete.obs") # Calcula a correlação de Kendall.
+
+plot(dem_liberal_num ~ dem_eleitoral_num, data = dados_aula, main = "Gráfico de Dispersão") # Cria um gráfico de dispersão.
+lm(dem_liberal_num ~ dem_eleitoral_num, data = dados_aula) # Ajusta um modelo de regressão linear simples.
+coeficientes <- lm(dem_liberal_num ~ dem_eleitoral_num, data = dados_aula) # Armazena os resultados do modelo de regressão.
+abline(coeficientes, col = 2, lwd=4) # Adiciona a linha de regressão ao gráfico de dispersão (em vermelho).
+
+## 5.5. Análise Comparativa de Variáveis Quantitativas por Grupo (Quantitativa vs. Qualitativa)
+
+### 5.5.1. Medidas Resumo por Grupo (tapply)
+# Aplica uma função (FUN) a subconjuntos de um vetor (X), definidos por um fator (INDEX).
+tapply(X = dados_aula$dem_liberal_num, # Variável quantitativa de interesse.
+       INDEX = dados_aula$tipo_regime, # Variável categórica para agrupar os dados.
+       FUN = mean, na.rm = T) # Calcula a média do índice para cada tipo de regime.
+
+tapply(X = dados_aula$dem_liberal_num,
+       INDEX = dados_aula$tipo_regime,
+       FUN = sd, na.rm = T) # Calcula o desvio padrão do índice para cada tipo de regime.
+
+tapply(X = dados_aula$dem_liberal_num,
+       INDEX = dados_aula$tipo_regime,
+       FUN = summary) # Gera um sumário estatístico completo para cada tipo de regime.
+
+### 5.5.2. Boxplots Comparativos
+boxplot(dem_liberal_num ~ tipo_regime, data = dados_aula) # Gera boxplots comparativos.
+
+### 5.5.3. Histograma e Densidade por Grupo
+dem_liberal <- subset(dados_aula, tipo_regime == "Democracia Liberal") # Cria um subconjunto de dados para "Democracia Liberal".
+dem_eleitoral <- subset(dados_aula, tipo_regime == "Democracia Eleitoral") # Cria um subconjunto de dados para "Democracia Eleitoral".
+auto_eleitoral <- subset(dados_aula, tipo_regime == "Autocracia Eleitoral") # Cria um subconjunto de dados para "Autocracia Eleitoral".
+
+par(mfrow = c(1,3)) # Define o layout da área de plotagem para 1 linha e 3 colunas.
+hist(dem_liberal$dem_liberal_num, main = "Democracia Liberal") # Histograma do índice para o grupo.
+hist(dem_eleitoral$dem_liberal_num, main = "Democracia Eleitoral") # Histograma do índice para o grupo.
+hist(auto_eleitoral$dem_liberal_num, main = "Autocracia Eleitoral") # Histograma do índice para o grupo.
+
+plot(density(dem_liberal$dem_liberal_num, na.rm = T), main = "Densidade da Democracia Liberal") # Plota a curva de densidade.
+plot(density(dem_eleitoral$dem_liberal_num, na.rm = T), main = "Densidade da Democracia Eleitoral") # Plota a curva de densidade.
+plot(density(auto_eleitoral$dem_liberal_num, na.rm = T), main = "Densidade da Autocracia Eleitoral") # Plota a curva de densidade.
+
+par(mfrow = c(1,1)) # Reseta o layout da área de plotagem para uma única figura.
+plot(density(dem_liberal$dem_liberal_num, na.rm = T), xlim = c(0,1), ylim = c(0,8), main = "Densidades por Tipo de Regime") # Plota a densidade do primeiro grupo com limites definidos.
+lines(density(dem_eleitoral$dem_liberal_num, na.rm = T), col= 2) # Adiciona a densidade do segundo grupo (em vermelho) ao gráfico existente.
+lines(density(auto_eleitoral$dem_liberal_num, na.rm = T), col = 4) # Adiciona a densidade do terceiro grupo (em azul) ao gráfico existente.
+legend("topleft", legend = c("Democracia Liberal", "Democracia Eleitoral", "Autocracia Eleitoral"), col = c(1,2,4), lwd = 2)
+
+```
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
