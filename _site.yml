@@ -49,12 +49,16 @@ navbar:
 
         - text: "Script"
           icon: fa-arrow-right
-          #href: encontros/encontro3.html
+          href: encontros/encontro3.html
 
         - text: "Dados"
           icon: fa-arrow-right
-          #href: encontros/dados/dados_vdem_aula.csv
-
+          href: encontros/dados/dados_vdem_aula.csv
+        
+        - text: "Documentação"
+          icon: fa-arrow-right
+          href: encontros/dados/leiame.pdf
+        
         - text: "---"
 
 
