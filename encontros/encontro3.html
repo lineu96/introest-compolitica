@@ -366,388 +366,259 @@ informações de um conjunto de dados real com R.</h2>
 <p>Os comandos a seguir mostram diversas técnicas vistas em aula para
 análise exploratória de variáveis qualitativas e quantitativas por meio
 de tabelas, gráficos e medidas.</p>
-<p>Os comandos são bastante básicos. Fica como tarefa aos interessados
-em linguagem R buscar maneiras de customizar os gráficos e tabelas e
-explorar ferramentas mais modernas para fazer a mesma análise proposta.
-Sugere-se fortemente a exploração de pacotes como dplyr e ggplot2.</p>
-<hr />
-</div>
-<div id="dataset-v-dem" class="section level2">
-<h2>Dataset V-Dem</h2>
-<p>Nesta aula, vamos trabalhar com dados reais extraídos da versão 14 do
-dataset V-Dem (Varieties of Democracy). O V-Dem é uma iniciativa de
-pesquisa global que coleta informações sobre a democracia em
-praticamente todos os países do mundo desde 1789.</p>
-<p>Nossa análise exploratória será focada em um recorte específico deste
-conjunto de dados, obtido diretamente do site do projeto V-Dem.</p>
-<div id="recorte-e-fonte-dos-dados" class="section level3">
-<h3>Recorte e Fonte dos Dados</h3>
-<ul>
-<li><p>Fonte: <a href="https://www.v-dem.net/data/the-v-dem-dataset/country-year-v-dem-fullothers-v14/">Country-Year:
-V-Dem Full+Others version 14</a>.</p></li>
-<li><p>Recorte Temporal: Para garantir que nossa análise seja robusta e
-com poucos dados faltantes, trabalharemos com o período de 2000 a
-2020.</p></li>
-</ul>
-</div>
-<div id="variáveis-da-análise" class="section level3">
-<h3>Variáveis da Análise</h3>
-<p>Variáveis Qualitativas (Categóricas):</p>
-<ul>
-<li><p><code>tipo_regime</code>: Classifica o tipo de regime político de
-um país, de acordo com o projeto “Regimes of the World”. Níveis:
-Autocracia Fechada (código 0), Autocracia Eleitoral (código 1),
-Democracia Eleitoral (código 2), Democracia Liberal (código 3).</p></li>
-<li><p><code>regiao</code>: Agrupa os países em seis grandes regiões
-político-geográficas. Níveis: Europa Oriental e Ásia Central (código 1),
-América Latina e Caribe (código 2), Oriente Médio e Norte da África
-(código 3), África Subsaariana (código 4), Europa Ocidental e América do
-Norte (código 5), Ásia e Pacífico (código 6).</p></li>
-</ul>
-<p>Variáveis Quantitativas (Numéricas):</p>
-<ul>
-<li><p>dem_eleitoral: O Índice de Democracia Eleitoral. Foca na
-qualidade de eleições, liberdade de imprensa e de associação. Sua escala
-vai de 0 (baixo) a 1 (alto).</p></li>
-<li><p><code>dem_liberal</code>: O Índice de Democracia Liberal. Avalia
-a proteção de direitos, Estado de Direito e liberdades civis. Sua escala
-vai de 0 (baixo) a 1 (alto).</p></li>
-<li><p><code>indice_polity</code>: O Índice Polity. Mede a democracia em
-uma escala de -10 (autocracia completa) a +10 (democracia completa).
-Códigos especiais que representam períodos de interrupção ou transição
-foram removidos.</p></li>
-<li><p><code>populacao</code>: O número de habitantes de um
-país.</p></li>
-</ul>
+<p>Fica como tarefa aos interessados em linguagem R buscar maneiras de
+customizar os gráficos e tabelas e explorar ferramentas mais modernas
+para fazer a mesma análise proposta. Sugere-se fortemente a exploração
+de pacotes como dplyr e ggplot2.</p>
 <hr />
 <pre class="r"><code>#-----------------------------------------------------------------------
-rm(list = ls()) # Limpa o ambiente de trabalho do R, removendo todos os objetos anteriores.
+# Encontro 3: Revisão Prática - Perfil do Eleitorado (TSE RR 2024)
 #-----------------------------------------------------------------------
+rm(list = ls()) 
+library(tidyverse)
 
 # --- Seção 1: Configuração Inicial e Carregamento dos Dados ---
 
-# Leitura dos dados tratados=
-dados_aula &lt;- read.csv(&quot;https://raw.githubusercontent.com/lineu96/aed-compolitica/refs/heads/master/encontros/dados/dados_vdem_aula.csv&quot;)
+# No TSE, o padrão é read_csv2 (separador ; e encoding Latin1/ISO-8859-1)
+dados_aula &lt;- read_csv2(&quot;perfil_eleitor_secao_2024_RR.csv&quot;, 
+                        locale = locale(encoding = &quot;ISO-8859-1&quot;))
 
-# Primeiras linhas
-head(dados_aula) # Exibe as primeiras 6 linhas do dataframe para uma inspeção inicial dos dados.
-
-#---
+# Primeiras linhas (inspeção inicial)
+dados_aula[,c(6,10,12,14,16,18,20,22,24,26,27,28,29,30,31)] %&gt;% 
+  head() %&gt;% 
+  View()
 
 # --- Seção 2: Análise Exploratória de Variáveis Qualitativas ---
 
-dados_aula$tipo_regime # Acessa a coluna &#39;tipo_regime&#39; para visualização.
+## 2.1. Tabelas de Frequência
+tabela_quali &lt;- dados_aula %&gt;%
+  group_by(DS_ESTADO_CIVIL) %&gt;%
+  summarise(&quot;freq_abs&quot; = sum(QT_ELEITORES_PERFIL)) %&gt;%
+  mutate(freq_rel = freq_abs / sum(freq_abs),
+         perc = freq_rel * 100)
 
-## 2.1. Tabelas de Frequência para Variáveis Qualitativas
-
-### 2.1.1. Frequência Absoluta
-table(dados_aula$tipo_regime) # Gera uma tabela de frequência absoluta para a variável &#39;tipo_regime&#39;.
-tabela_regime_freq_abs &lt;- table(dados_aula$tipo_regime) # Armazena a tabela de frequência absoluta em &#39;tabela_regime_freq_abs&#39;.
-tabela_regime_freq_abs # Exibe &#39;tabela_regime_freq_abs&#39;.
-sum(tabela_regime_freq_abs) # Soma as frequências para verificar o total de observações.
-
-### 2.1.2. Frequência Relativa
-prop.table(tabela_regime_freq_abs) # Calcula as proporções (frequências relativas) a partir de &#39;tabela_regime_freq_abs&#39;.
-tabela_regime_freq_rel &lt;- prop.table(tabela_regime_freq_abs) # Armazena as frequências relativas em &#39;tabela_regime_freq_rel&#39;.
-tabela_regime_freq_rel # Exibe &#39;tabela_regime_freq_rel&#39;.
-sum(tabela_regime_freq_rel) # Soma as proporções para verificar se o total é 1 (ou próximo de 1).
-
-### 2.1.3. Frequência Percentual
-tabela_regime_freq_rel*100 # Converte as proporções de &#39;tabela_regime_freq_rel&#39; em percentuais.
-tabela_regime_freq_perc &lt;- tabela_regime_freq_rel*100 # Armazena os percentuais em &#39;tabela_regime_freq_perc&#39;.
-tabela_regime_freq_perc # Exibe &#39;tabela_regime_freq_perc&#39;.
-sum(tabela_regime_freq_perc) # Soma os percentuais para verificar se o total é 100.
+names(tabela_quali) &lt;- c(&quot;Estado civil&quot;, &quot;Freq. Abs.&quot;, 
+                         &quot;Freq. Rel.&quot;, &quot;Percentual&quot;)
+tabela_quali
+tabela_quali %&gt;% arrange(., desc(`Freq. Rel.`))
 
 ## 2.2. Gráficos para Variáveis Qualitativas
 
-### 2.2.1. Gráficos de Barras Simples (plot)
-plot(tabela_regime_freq_abs) # Gera um gráfico de barras simples usando a função &#39;plot&#39; para frequências absolutas.
-plot(tabela_regime_freq_rel) # Gera um gráfico de barras simples para frequências relativas.
-plot(tabela_regime_freq_perc) # Gera um gráfico de barras simples para percentuais.
+# 2.2.1. Gráficos de Barras Simples
+ggplot(tabela_quali, aes(x = `Estado civil`, y = `Freq. Abs.`)) +
+  geom_col(fill = &quot;steelblue&quot;) +
+  theme_minimal()
 
-### 2.2.2. Gráficos de Barras (barplot)
-barplot(tabela_regime_freq_abs) # Gera um gráfico de barras usando a função &#39;barplot&#39; para frequências absolutas.
-barplot(tabela_regime_freq_rel) # Gera um gráfico de barras para frequências relativas.
-barplot(tabela_regime_freq_perc) # Gera um gráfico de barras para percentuais.
+ggplot(tabela_quali, aes(x = reorder(`Estado civil`, `Freq. Abs.`), y = `Freq. Abs.`)) +
+  geom_col(fill = &quot;steelblue&quot;) +
+  theme_minimal() + 
+  xlab(&quot;Estado Civil&quot;)
 
-### 2.2.3. Gráficos de Barras Horizontais
-par(mar=c(5, 10, 4, 2) + 0.1)
-barplot(tabela_regime_freq_abs, horiz=T, las=1) # Gera um gráfico de barras horizontais para frequências absolutas.
-barplot(tabela_regime_freq_rel, horiz=T, las=1) # Gera um gráfico de barras horizontais para frequências relativas.
-barplot(tabela_regime_freq_perc, horiz=T, las=1) # Gera um gráfico de barras horizontais para percentuais.
-par(mar=c(5, 4, 4, 2) + 0.1)
+ggplot(tabela_quali, aes(x = reorder(`Estado civil`, desc(`Freq. Abs.`)), 
+                         y = `Freq. Abs.`)) +
+  geom_col(fill = &quot;steelblue&quot;) +
+  theme_minimal() + 
+  xlab(&quot;Estado Civil&quot;)
 
-### 2.2.4. Gráficos de Pizza
-pie(tabela_regime_freq_abs) # Gera um gráfico de pizza para frequências absolutas.
-pie(tabela_regime_freq_rel) # Gera um gráfico de pizza para frequências relativas.
-pie(tabela_regime_freq_perc) # Gera um gráfico de pizza para percentuais.
+# 2.2.3. Gráficos de Barras Horizontais
+ggplot(tabela_quali, aes(x = reorder(`Estado civil`, `Freq. Abs.`), 
+                         y = `Freq. Abs.`)) +
+  geom_col(fill = &quot;steelblue&quot;) +
+  coord_flip() +
+  theme_minimal()+
+  labs(x = &quot;Estado Civil&quot;)
 
-### 2.2.5. Gráficos de Barras Empilhadas (Usando &quot;Truque&quot;)
-# Cria uma tabela de frequência que, ao incluir uma coluna &quot;vazia&quot; (com um valor repetido para todas as observações),
-# força a função `barplot()` a criar um gráfico de barras empilhadas para uma única variável qualitativa.
+# 2.2.4. Gráficos de Barras Empilhadas (Uma única barra)
+ggplot(tabela_quali, aes(x = &quot;Paraná&quot;, 
+                         y = `Freq. Abs.`, 
+                         fill = `Estado civil`)) +
+  geom_col(position = &quot;stack&quot;)
 
-tabela_regime_dummy &lt;- table(dados_aula$tipo_regime, rep(&#39;&#39;, nrow(dados_aula))) # &#39;rep(&#39;&#39;,nrow(dados_aula))&#39; atua como uma segunda variável dummy.
-barplot(tabela_regime_dummy, legend.text = T) # Gera um gráfico de barras empilhadas, onde cada segmento representa uma categoria de estado civil.
-barplot(tabela_regime_dummy, horiz = T, legend.text = T) # Gera o mesmo gráfico, mas com barras horizontais empilhadas.
+# 2.2.5. Gráficos de Pizza
+ggplot(tabela_quali, aes(x = &quot;&quot;, y = `Freq. Abs.`, 
+                         fill = `Estado civil`)) +
+  geom_col() +
+  coord_polar(&quot;y&quot;) +
+  theme_void()
 
-tabela_regime_dummy_prop &lt;- prop.table(tabela_regime_dummy) # Calcula as proporções para &#39;tabela_regime_dummy&#39;.
-barplot(tabela_regime_dummy_prop, legend.text = T) # Gera gráfico de barras empilhadas com proporções.
-barplot(tabela_regime_dummy_prop, horiz = T, legend.text = T) # Gera gráfico de barras horizontais empilhadas com proporções.
-
-## 2.3. Organização de Tabelas de Frequência
-
-# Cria um dataframe para organizar as tabelas de frequência de forma mais apresentável.
-tabela_regime_final &lt;- data.frame(tipo_regime = names(tabela_regime_freq_abs), # Nomes das categorias.
-                                  freq = as.vector(tabela_regime_freq_abs), # Frequências absolutas.
-                                  freq_r = as.vector(tabela_regime_freq_rel)) # Frequências relativas.
-
-tabela_regime_final # Exibe o dataframe inicial.
-tabela_regime_final[5,1] &lt;- &quot;TOTAL&quot; # Adiciona a linha &quot;TOTAL&quot; na primeira coluna.
-tabela_regime_final[5,2] &lt;- sum(tabela_regime_final$freq, na.rm = T) # Calcula e adiciona a soma das frequências absolutas.
-tabela_regime_final[5,3] &lt;- sum(tabela_regime_final$freq_r, na.rm = T) # Calcula e adiciona a soma das frequências relativas.
-tabela_regime_final # Exibe o dataframe com a linha de total.
-
-names(tabela_regime_final) # Exibe os nomes atuais das colunas.
-names(tabela_regime_final) &lt;- c(&quot;Tipo de Regime&quot;,
-                                &quot;Freq. absoluta&quot;,
-                                &quot;Freq. Relativa&quot;) # Renomeia as colunas para melhor legibilidade.
-tabela_regime_final # Exibe o dataframe final com os novos nomes.
-
-#---
 # --- Seção 3: Análise Exploratória de Variáveis Quantitativas ---
 
-dados_aula$dem_liberal_num # Acessa a coluna &#39;dem_liberal&#39; para visualização.
+## 3.1. Tabelas de Frequência com Classes
+# Criando faixas para a variável quantidade de eleitores por local
+eleitores_local &lt;- dados_aula %&gt;%
+  group_by(NM_LOCAL_VOTACAO) %&gt;%
+  summarise(freq = sum(QT_ELEITORES_PERFIL))
 
-## 3.1. Tabelas de Frequência para Variáveis Quantitativas (com Classes)
+eleitores_local &lt;- eleitores_local %&gt;%
+  mutate(Faixas = cut(freq, 
+                      breaks = seq(0,4100,300), 
+                      right = FALSE, 
+                      include.lowest = TRUE,
+                      dig.lab=10))
 
-breaks &lt;- seq(0, 1, 0.1) # Define os pontos de corte (quebras) para as classes de intervalo da democracia liberal.
+eleitores_local %&gt;% group_by(Faixas) %&gt;% summarise(n = n())
 
-classes &lt;- cut(dados_aula$dem_liberal_num, # Divide a variável &#39;dem_liberal&#39; em intervalos (classes).
-               breaks = breaks, # Utiliza os pontos de corte definidos.
-               include.lowest = TRUE, # Define intervalos fechados à esquerda.
-               right = FALSE) # Define intervalos abertos à direita.
+## 3.2. Gráficos para Variáveis Quantitativas (Variável: QT_ELEITORES_PERFIL)
 
-table(classes) # Gera uma tabela de frequência para as classes de democracia liberal.
-tabela_dem_classes_abs &lt;- table(classes) # Armazena a tabela de frequência em &#39;tabela_dem_classes_abs&#39;.
-tabela_dem_classes_abs # Exibe &#39;tabela_dem_classes_abs&#39;.
-sum(tabela_dem_classes_abs) # Soma as frequências para verificar o total de observações.
+# 3.2.1. Histograma e Densidade
 
-prop.table(tabela_dem_classes_abs) # Calcula as proporções (frequências relativas) a partir de &#39;tabela_dem_classes_abs&#39;.
-tabela_dem_classes_rel &lt;- prop.table(tabela_dem_classes_abs) # Armazena as frequências relativas em &#39;tabela_dem_classes_rel&#39;.
-tabela_dem_classes_rel # Exibe &#39;tabela_dem_classes_rel&#39;.
-sum(tabela_dem_classes_rel) # Soma as proporções para verificar se o total é 1.
+ggplot(eleitores_local, aes(x = freq)) +
+  geom_histogram(binwidth = 300, fill = &quot;gray&quot;, col = 1, boundary = 0) +
+  scale_x_continuous(
+    breaks = seq(0, 4100, by = 300), 
+    limits = c(0, 4100)
+  ) +
+  labs(title = &quot;Histograma&quot;, x = &#39;Faixas&#39;, y = &#39;Frequência&#39;)
 
-tabela_dem_classes_rel*100 # Converte as proporções de &#39;tabela_dem_classes_rel&#39; em percentuais.
-tabela_dem_classes_perc &lt;- tabela_dem_classes_rel*100 # Armazena os percentuais em &#39;tabela_dem_classes_perc&#39;.
-tabela_dem_classes_perc # Exibe &#39;tabela_dem_classes_perc&#39;.
-sum(tabela_dem_classes_perc) # Soma os percentuais para verificar se o total é 100.
+ggplot(eleitores_local, aes(x = freq)) +
+  geom_density(color = &quot;red&quot;, size = 1) +
+  labs(title = &quot;Densidade&quot;, x = &#39;&#39;, y=&#39;Densidade&#39;)
 
-## 3.2. Gráficos para Variáveis Quantitativas
+ggplot(eleitores_local, aes(x = freq)) +
+  geom_histogram(aes(y = ..density..), binwidth = 300, 
+                 fill = &quot;gray&quot;, col = 1, boundary = 0) +
+  geom_density(color = &quot;red&quot;, size = 1) +
+  labs(title = &quot;Histograma e Densidade&quot;, x = &#39;Faixas&#39;, y=&#39;Densidade&#39;)
 
-### 3.2.1. Histograma e Densidade
-tabela_dem_classes_abs # Exibe a tabela de frequência das classes de democracia liberal.
+# 3.2.2. Boxplot
+ggplot(eleitores_local, aes(y = freq)) +
+  geom_boxplot(fill = &quot;lightgreen&quot;) +
+  labs(title = &quot;Boxplot&quot;)
 
-barplot(tabela_dem_classes_abs, space = 0) # Gera um gráfico de barras (histograma) das classes sem espaço entre as barras.
-hist(dados_aula$dem_liberal_num, main = &quot;Histograma de Democracia Liberal&quot;, breaks) # Gera um histograma padrão da variável.
-hist(dados_aula$dem_liberal_num, breaks, probability = T, main = &quot;Histograma de Densidade&quot;) # Gera um histograma de densidade (com a área total igual a 1).
-
-densidade &lt;- density(dados_aula$dem_liberal_num, na.rm = T) # Estima a função de densidade de probabilidade.
-plot(densidade, main = &quot;Curva de Densidade&quot;) # Plota a curva de densidade estimada.
-
-hist(dados_aula$dem_liberal_num, breaks, probability = T, main = &quot;Histograma com Curva de Densidade&quot;) # Gera novamente o histograma de densidade.
-lines(densidade) # Adiciona a curva de densidade ao histograma existente.
-
-### 3.2.2. Boxplot
-boxplot(dados_aula$dem_liberal_num, main = &quot;Boxplot de Democracia Liberal&quot;) # Gera um boxplot para a variável.
-boxplot(dados_aula$dem_liberal_num, horizontal = T, main = &quot;Boxplot Horizontal de Democracia Liberal&quot;) # Gera um boxplot horizontal.
-
-## 3.3. Organização de Tabelas de Frequência para Variáveis Quantitativas
-
-# Cria um dataframe para organizar as tabelas de frequência para variáveis quantitativas.
-tabela_dem_final &lt;- data.frame(faixas= names(tabela_dem_classes_abs), # Nomes das faixas.
-                               freq = as.vector(tabela_dem_classes_abs), # Frequências absolutas das faixas.
-                               freq_r = as.vector(tabela_dem_classes_rel)) # Frequências relativas das faixas.
-
-tabela_dem_final # Exibe o dataframe inicial.
-tabela_dem_final[11,1] &lt;- &quot;TOTAL&quot; # Adiciona a linha &quot;TOTAL&quot; na primeira coluna (considerando 10 faixas + 1 para o total).
-tabela_dem_final[11,2] &lt;- sum(tabela_dem_final$freq, na.rm = T) # Calcula e adiciona a soma das frequências absolutas.
-tabela_dem_final[11,3] &lt;- sum(tabela_dem_final$freq_r, na.rm = T) # Calcula e adiciona a soma das frequências relativas.
-tabela_dem_final # Exibe o dataframe com a linha de total.
-
-names(tabela_dem_final) # Exibe os nomes atuais das colunas.
-names(tabela_dem_final) &lt;- c(&quot;Faixas&quot;,
-                             &quot;Freq. absoluta&quot;,
-                             &quot;Freq. Relativa&quot;) # Renomeia as colunas para melhor legibilidade.
-tabela_dem_final # Exibe o dataframe final com os novos nomes.
-
-#---
 # --- Seção 4: Medidas Resumo (Posição e Dispersão) ---
 
-dados_aula$dem_liberal_num # Acessa a coluna &#39;dem_liberal&#39; para visualização.
+## 4.1. Medidas de Posição
+resumo_posicao &lt;- eleitores_local %&gt;%
+  summarise(
+    media = mean(freq),
+    mediana = median(freq),
+    q1 = quantile(freq, 0.25),
+    q3 = quantile(freq, 0.75),
+    decil_9 = quantile(freq, 0.9)
+  )
 
-## 4.1. Medidas de Posição (Tendência Central e Separatrizes)
+resumo_posicao
 
-### 4.1.1. Média Aritmética
-sum(dados_aula$dem_liberal_num, na.rm = T)/length(dados_aula$dem_liberal_num[!is.na(dados_aula$dem_liberal_num)]) # Calcula a média da democracia liberal manualmente.
-mean(dados_aula$dem_liberal_num, na.rm = T) # Calcula a média usando a função &#39;mean()&#39;.
+## 4.2. Medidas de Dispersão
+resumo_dispersao &lt;- eleitores_local %&gt;%
+  summarise(
+    amplitude = diff(range(freq)),
+    variancia = var(freq),
+    desvio_padrao = sd(freq)#,
+    #cv = (desvio_padrao / media) * 100,
+    #dma = mean(abs(freq - mean(freq))) # Desvio Médio Absoluto
+  )
 
-### 4.1.2. Mediana
-median(dados_aula$dem_liberal_num, na.rm = T) # Calcula a mediana.
+resumo_dispersao
 
-### 4.1.3. Quartis e Decis
-quantile(dados_aula$dem_liberal_num, na.rm = T) # Calcula os quartis (0%, 25%, 50%, 75%, 100%).
-quantile(dados_aula$dem_liberal_num, seq(0,1,0.1), na.rm = T) # Calcula os decis de 0% a 100% (a cada 10%).
-quantile(dados_aula$dem_liberal_num, na.rm = T)[4] - quantile(dados_aula$dem_liberal_num, na.rm = T)[2] # Calcula a Amplitude Interquartil (Q3 - Q1).
+# 4.2.6. Escores Z (Padronização)
+print(eleitores_local %&gt;%
+        mutate(z_score = scale(freq)), 
+      n=nrow(eleitores_local))
 
-## 4.2. Medidas de Dispersão (Variabilidade)
+# --- Seção 5: Análises Bivariadas ---
 
-### 4.2.1. Amplitude Total
-min(dados_aula$dem_liberal_num, na.rm = T) # Encontra o valor mínimo.
-max(dados_aula$dem_liberal_num, na.rm = T) # Encontra o valor máximo.
-range(dados_aula$dem_liberal_num, na.rm = T) # Retorna o mínimo e o máximo.
-max(dados_aula$dem_liberal_num, na.rm = T) - min(dados_aula$dem_liberal_num, na.rm = T) # Calcula a amplitude.
-diff(range(dados_aula$dem_liberal_num, na.rm = T)) # Outra forma de calcular a amplitude total.
+## 5.1. Tabelas de Contingência (Gênero vs Raça/Cor)
+tabela_contingencia &lt;- dados_aula %&gt;%
+  group_by(DS_GENERO, DS_RACA_COR) %&gt;%
+  summarise(total = sum(QT_ELEITORES_PERFIL)) 
 
-### 4.2.2. Desvios Absolutos
-dados_aula$dem_liberal_num - mean(dados_aula$dem_liberal_num, na.rm = T) # Calcula os desvios em relação à média.
-dados_aula$dem_liberal_num - median(dados_aula$dem_liberal_num, na.rm = T) # Calcula os desvios em relação à mediana.
+# 5.1.2. Proporção Geral / 5.1.3. Por Linha / 5.1.4. Por Coluna
+tabela_contingencia %&gt;%
+  mutate(prop_geral = total / sum(total)) %&gt;%
+  group_by(DS_GENERO) %&gt;%
+  mutate(prop_linha = total / sum(total))
 
-da_media &lt;- abs(dados_aula$dem_liberal_num - mean(dados_aula$dem_liberal_num, na.rm = T)) # Calcula o desvio absoluto em relação à média.
-da_mediana &lt;- abs(dados_aula$dem_liberal_num - median(dados_aula$dem_liberal_num, na.rm = T)) # Calcula o desvio absoluto em relação à mediana.
+## 5.2. Gráficos Bivariados (Quali vs Quali)
 
-### 4.2.3. Desvio Médio Absoluto (DMA)
-mean(da_media, na.rm = T) # Calcula o Desvio Médio Absoluto (DMA) em relação à média.
-mean(da_mediana, na.rm = T) # Calcula o Desvio Médio Absoluto (DMA) em relação à mediana.
+# 5.2.1. Barras lado a lado
+ggplot(tabela_contingencia, aes(x = DS_GENERO, 
+                                y = total, 
+                                fill = DS_RACA_COR)) +
+  geom_col(position = &quot;dodge&quot;) 
 
-### 4.2.4. Variância e Desvio Padrão
-var(dados_aula$dem_liberal_num, na.rm = T) # Calcula a variância.
-sqrt(var(dados_aula$dem_liberal_num, na.rm = T)) # Calcula o desvio padrão a partir da raiz quadrada.
-sd(dados_aula$dem_liberal_num, na.rm = T) # Calcula o desvio padrão usando a função &#39;sd()&#39;.
+ggplot(tabela_contingencia, aes(x = DS_RACA_COR, 
+                                y = total, 
+                                fill = DS_GENERO)) +
+  geom_col(position = &quot;dodge&quot;)
 
-### 4.2.5. Coeficiente de Variação (CV)
-sd(dados_aula$dem_liberal_num, na.rm = T)/mean(dados_aula$dem_liberal_num, na.rm = T) # Calcula o coeficiente de variação.
+# 5.2.2. Barras empilhadas
+ggplot(tabela_contingencia, aes(x = DS_GENERO, 
+                                y = total, 
+                                fill = DS_RACA_COR)) +
+  geom_col(position = &quot;stack&quot;)
 
-### 4.2.6. Escores Z (Padronização)
-(dados_aula$dem_liberal_num - mean(dados_aula$dem_liberal_num, na.rm = T))/sd(dados_aula$dem_liberal_num, na.rm = T) # Calcula os escores Z.
-escore &lt;- scale(dados_aula$dem_liberal_num) # Função mais eficiente para calcular os escores Z.
-mean(escore, na.rm = T) # Calcula a média dos escores Z (deve ser aproximadamente 0).
-sd(escore, na.rm = T) # Calcula o desvio padrão dos escores Z (deve ser aproximadamente 1).
+ggplot(tabela_contingencia, aes(x = DS_RACA_COR, 
+                                y = total, 
+                                fill = DS_GENERO)) +
+  geom_col(position = &quot;stack&quot;)
 
-### 4.2.7. Entropia de Shannon (Variabilidade para Qualitativas)
-dados_aula$regiao # Acessa a coluna &#39;regiao&#39;.
-tabela_regiao_freq_abs &lt;- table(dados_aula$regiao) # Tabela de frequência para &#39;regiao&#39;.
-pi &lt;- prop.table(tabela_regiao_freq_abs) # Proporções (frequências relativas).
-log_pi &lt;- log(pi) # Logaritmo natural das proporções.
-h &lt;- -(sum(pi*log_pi)) # Calcula a entropia de Shannon, uma medida de variabilidade para variáveis qualitativas.
-h # Exibe o valor da entropia.
+# 5.2.3. Barras empilhadas proporcionais
+ggplot(tabela_contingencia, aes(x = DS_GENERO, 
+                                y = total, 
+                                fill = DS_RACA_COR)) +
+  geom_col(position = &quot;fill&quot;) +
+  labs(y = &quot;Proporção&quot;)
 
-#---
-# --- Seção 5: Análises Bivariadas (Explorando Relações entre Variáveis) ---
+ggplot(tabela_contingencia, aes(x = DS_RACA_COR, 
+                                y = total, 
+                                fill = DS_GENERO)) +
+  geom_col(position = &quot;fill&quot;) +
+  labs(y = &quot;Proporção&quot;)
 
-dados_aula$tipo_regime # Acessa a coluna &#39;tipo_regime&#39;.
-dados_aula$regiao # Acessa a coluna &#39;regiao&#39;.
+## 5.3. Diagrama de Dispersão / 5.4. Correlação (Quanti vs Quanti)
+# Relação entre Total de Eleitores e Eleitores com Deficiência por municipio
 
-## 5.1. Tabelas de Contingência (Qualitativa vs. Qualitativa)
+eleitores_pcd &lt;- dados_aula %&gt;%
+  group_by(NR_SECAO) %&gt;%
+  summarise(eleitores = sum(QT_ELEITORES_PERFIL),
+            pcd = sum(QT_ELEITORES_DEFICIENCIA))
 
-table(dados_aula$tipo_regime, dados_aula$regiao) # Tabela de contingência entre &#39;tipo_regime&#39; e &#39;regiao&#39;.
-table(dados_aula$regiao, dados_aula$tipo_regime) # Tabela de contingência com as variáveis invertidas.
+ggplot(eleitores_pcd, aes(x = eleitores, 
+                          y = pcd)) +
+  geom_point(alpha = 0.8)
 
-### 5.1.1. Tabela de Frequência Absoluta
-tabela_contingencia_abs &lt;- table(dados_aula$tipo_regime,
-                                 dados_aula$regiao) # Armazena a tabela de contingência.
-tabela_contingencia_abs # Exibe &#39;tabela_contingencia_abs&#39;.
-sum(tabela_contingencia_abs) # Soma total das observações.
+ggplot(eleitores_pcd, aes(x = eleitores, 
+                          y = pcd)) +
+  geom_point(alpha = 0.8) +
+  geom_smooth(method = &quot;lm&quot;)
 
-addmargins(tabela_contingencia_abs) # Adiciona somas de linha e coluna (margens).
-t(tabela_contingencia_abs) # Transpõe a tabela (inverte linhas e colunas).
+ggplot(eleitores_pcd, aes(x = eleitores, 
+                          y = pcd)) +
+  geom_point(alpha = 0.8) +
+  geom_smooth(method = &quot;loess&quot;)
 
-### 5.1.2. Tabela de Proporção Geral
-prop.table(tabela_contingencia_abs) # Calcula as proporções em relação ao total geral da tabela.
-tabela_contingencia_rel &lt;- prop.table(tabela_contingencia_abs) # Armazena as proporções gerais.
-tabela_contingencia_rel # Exibe &#39;tabela_contingencia_rel&#39;.
-sum(tabela_contingencia_rel) # Soma as proporções para verificar o total (deve ser 1).
-addmargins(tabela_contingencia_rel) # Adiciona somas de linha e coluna às proporções gerais.
-t(tabela_contingencia_rel) # Transpõe a tabela de proporções gerais.
+ggplot(eleitores_pcd, aes(x = eleitores, 
+                          y = pcd)) +
+  geom_point(alpha = 0.8) +
+  geom_smooth(method = &quot;loess&quot;, se=F)+
+  geom_smooth(method = &quot;lm&quot;, se=F, col=2)
 
-### 5.1.3. Tabela de Proporção por Linha
-prop.table(tabela_contingencia_abs, margin = 1) # Calcula as proporções por linha (soma de cada linha = 1).
-tabela_contingencia_linha &lt;- prop.table(tabela_contingencia_abs, margin = 1) # Armazena as proporções por linha.
-tabela_contingencia_linha # Exibe &#39;tabela_contingencia_linha&#39;.
-addmargins(tabela_contingencia_linha) # Adiciona somas de linha e coluna (as somas das linhas serão 1).
-t(tabela_contingencia_linha) # Transpõe a tabela de proporções por linha.
+cor(eleitores_pcd$eleitores, eleitores_pcd$pcd)
 
-### 5.1.4. Tabela de Proporção por Coluna
-prop.table(tabela_contingencia_abs, margin = 2) # Calcula as proporções por coluna (soma de cada coluna = 1).
-tabela_contingencia_coluna &lt;- prop.table(tabela_contingencia_abs, margin = 2) # Armazena as proporções por coluna.
-tabela_contingencia_coluna # Exibe &#39;tabela_contingencia_coluna&#39;.
-addmargins(tabela_contingencia_coluna) # Adiciona somas de linha e coluna (as somas das colunas serão 1).
+## 5.5. Comparativa por Grupo (Quanti vs Quali)
 
-## 5.2. Gráficos para Análises Bivariadas (Qualitativa vs. Qualitativa)
+# 5.5.1. Medidas Resumo por Grupo (Gênero)
+eleitores_genero &lt;- dados_aula %&gt;%
+  group_by(NM_LOCAL_VOTACAO, DS_GENERO) %&gt;%
+  summarise(eleitores = sum(QT_ELEITORES_PERFIL))
 
-tabela_contingencia_abs # Exibe a tabela de contingência original.
+eleitores_genero %&gt;%
+  group_by(DS_GENERO) %&gt;%
+  summarise(media = mean(eleitores), 
+            sd = sd(eleitores))
 
-barplot(tabela_contingencia_abs, beside = F, legend.text = T, main = &quot;Gráfico de Barras Empilhadas&quot;) # Gráfico de barras empilhadas com legenda.
-barplot(t(tabela_contingencia_abs), beside = F, legend.text = T, main = &quot;Gráfico de Barras Empilhadas (Transposto)&quot;) # Gráfico de barras empilhadas com a tabela transposta.
+# 5.5.2. Boxplots Comparativos
+ggplot(eleitores_genero, aes(x = DS_GENERO, 
+                             y = eleitores)) +
+  geom_boxplot()
 
-barplot(tabela_contingencia_abs, beside = T, legend.text = T, main = &quot;Gráfico de Barras Agrupadas&quot;) # Gráfico de barras agrupadas com legenda.
-barplot(t(tabela_contingencia_abs), beside = T, legend.text = T, main = &quot;Gráfico de Barras Agrupadas (Transposto)&quot;) # Gráfico de barras agrupadas com a tabela transposta.
-
-barplot(t(tabela_contingencia_linha), legend.text = T, main = &quot;Proporção por Linha&quot;) # Gráfico de barras para proporções por linha.
-barplot(tabela_contingencia_coluna, legend.text = T, main = &quot;Proporção por Coluna&quot;) # Gráfico de barras para proporções por coluna.
-
-## 5.3. Correlação (Quantitativa vs. Quantitativa)
-
-cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, use = &quot;complete.obs&quot;) # Calcula a correlação de Pearson entre &#39;dem_liberal&#39; e &#39;dem_eleitoral&#39; (padrão).
-cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, method = &quot;pearson&quot;, use = &quot;complete.obs&quot;) # Especifica o método de Pearson para correlação linear.
-cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, method = &quot;spearman&quot;, use = &quot;complete.obs&quot;) # Calcula a correlação de Spearman.
-cor(dados_aula$dem_liberal_num, dados_aula$dem_eleitoral_num, method = &quot;kendall&quot;, use = &quot;complete.obs&quot;) # Calcula a correlação de Kendall.
-
-plot(dem_liberal_num ~ dem_eleitoral_num, data = dados_aula, main = &quot;Gráfico de Dispersão&quot;) # Cria um gráfico de dispersão.
-lm(dem_liberal_num ~ dem_eleitoral_num, data = dados_aula) # Ajusta um modelo de regressão linear simples.
-coeficientes &lt;- lm(dem_liberal_num ~ dem_eleitoral_num, data = dados_aula) # Armazena os resultados do modelo de regressão.
-abline(coeficientes, col = 2, lwd=4) # Adiciona a linha de regressão ao gráfico de dispersão (em vermelho).
-
-## 5.5. Análise Comparativa de Variáveis Quantitativas por Grupo (Quantitativa vs. Qualitativa)
-
-### 5.5.1. Medidas Resumo por Grupo (tapply)
-# Aplica uma função (FUN) a subconjuntos de um vetor (X), definidos por um fator (INDEX).
-tapply(X = dados_aula$dem_liberal_num, # Variável quantitativa de interesse.
-       INDEX = dados_aula$tipo_regime, # Variável categórica para agrupar os dados.
-       FUN = mean, na.rm = T) # Calcula a média do índice para cada tipo de regime.
-
-tapply(X = dados_aula$dem_liberal_num,
-       INDEX = dados_aula$tipo_regime,
-       FUN = sd, na.rm = T) # Calcula o desvio padrão do índice para cada tipo de regime.
-
-tapply(X = dados_aula$dem_liberal_num,
-       INDEX = dados_aula$tipo_regime,
-       FUN = summary) # Gera um sumário estatístico completo para cada tipo de regime.
-
-### 5.5.2. Boxplots Comparativos
-boxplot(dem_liberal_num ~ tipo_regime, data = dados_aula) # Gera boxplots comparativos.
-
-### 5.5.3. Histograma e Densidade por Grupo
-dem_liberal &lt;- subset(dados_aula, tipo_regime == &quot;Democracia Liberal&quot;) # Cria um subconjunto de dados para &quot;Democracia Liberal&quot;.
-dem_eleitoral &lt;- subset(dados_aula, tipo_regime == &quot;Democracia Eleitoral&quot;) # Cria um subconjunto de dados para &quot;Democracia Eleitoral&quot;.
-auto_eleitoral &lt;- subset(dados_aula, tipo_regime == &quot;Autocracia Eleitoral&quot;) # Cria um subconjunto de dados para &quot;Autocracia Eleitoral&quot;.
-
-par(mfrow = c(1,3)) # Define o layout da área de plotagem para 1 linha e 3 colunas.
-hist(dem_liberal$dem_liberal_num, main = &quot;Democracia Liberal&quot;) # Histograma do índice para o grupo.
-hist(dem_eleitoral$dem_liberal_num, main = &quot;Democracia Eleitoral&quot;) # Histograma do índice para o grupo.
-hist(auto_eleitoral$dem_liberal_num, main = &quot;Autocracia Eleitoral&quot;) # Histograma do índice para o grupo.
-
-plot(density(dem_liberal$dem_liberal_num, na.rm = T), main = &quot;Densidade da Democracia Liberal&quot;) # Plota a curva de densidade.
-plot(density(dem_eleitoral$dem_liberal_num, na.rm = T), main = &quot;Densidade da Democracia Eleitoral&quot;) # Plota a curva de densidade.
-plot(density(auto_eleitoral$dem_liberal_num, na.rm = T), main = &quot;Densidade da Autocracia Eleitoral&quot;) # Plota a curva de densidade.
-
-par(mfrow = c(1,1)) # Reseta o layout da área de plotagem para uma única figura.
-plot(density(dem_liberal$dem_liberal_num, na.rm = T), xlim = c(0,1), ylim = c(0,8), main = &quot;Densidades por Tipo de Regime&quot;) # Plota a densidade do primeiro grupo com limites definidos.
-lines(density(dem_eleitoral$dem_liberal_num, na.rm = T), col= 2) # Adiciona a densidade do segundo grupo (em vermelho) ao gráfico existente.
-lines(density(auto_eleitoral$dem_liberal_num, na.rm = T), col = 4) # Adiciona a densidade do terceiro grupo (em azul) ao gráfico existente.
-legend(&quot;topleft&quot;, legend = c(&quot;Democracia Liberal&quot;, &quot;Democracia Eleitoral&quot;, &quot;Autocracia Eleitoral&quot;), col = c(1,2,4), lwd = 2)</code></pre>
+# 5.5.3. Histograma e Densidade por Grupo
+ggplot(eleitores_genero, aes(x = eleitores, fill = DS_GENERO)) +
+  geom_density(alpha = 0.4) +
+  labs(title = &quot;&quot;)</code></pre>
 <div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
 
-</div>
 </div>
 </div>
 </div>
