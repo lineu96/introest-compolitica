@@ -53,7 +53,7 @@ navbar:
 
         - text: "Dados"
           icon: fa-arrow-right
-          href: encontros/dados/dados_vdem_aula.csv
+          href: perfil_eleitor_secao_2024_RR.csv
         
         - text: "Documentação"
           icon: fa-arrow-right
