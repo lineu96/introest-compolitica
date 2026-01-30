@@ -53,7 +53,7 @@ navbar:
 
         - text: "Dados"
           icon: fa-arrow-right
-          href: perfil_eleitor_secao_2024_RR.csv
+          href: encontros/dados/perfil_eleitor_secao_2024_RR.csv
         
         - text: "Documentação"
           icon: fa-arrow-right
